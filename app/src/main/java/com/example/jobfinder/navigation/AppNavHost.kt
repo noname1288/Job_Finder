@@ -32,7 +32,7 @@ fun AppNavHost(
     val innerPadding = null
     NavHost(
         navController = navController,
-        startDestination = AppRoutes.WORK_SPACE,
+        startDestination = AppRoutes.HOME,
         modifier = modifier
     ) {
         composable( AppRoutes.HOME) {
