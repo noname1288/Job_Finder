@@ -6,21 +6,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-import com.example.jobfinder.feature.candidate.CandidateListPage
-import com.example.jobfinder.feature.candidate.CandidateManagementPage
-import com.example.jobfinder.feature.forgotpassword.ForgetPage1
-import com.example.jobfinder.feature.forgotpassword.ForgetPage2
-import com.example.jobfinder.feature.forgotpassword.ForgetPage3
-import com.example.jobfinder.feature.home.HomePage
-import com.example.jobfinder.feature.login.LoginPage
-import com.example.jobfinder.feature.login.LoginViewModel
-import com.example.jobfinder.feature.message.ChatDetailPage
-import com.example.jobfinder.feature.message.MessagePage
-import com.example.jobfinder.feature.notification.NotificationPage
-import com.example.jobfinder.feature.profile.ProfilePage
-import com.example.jobfinder.feature.workspace.WorkspacePage
-import com.example.jobfinder.feature.message.ChatViewModel
-import com.example.jobfinder.feature.workspace.create.CreateJobPage
+import com.example.jobfinder.presentation.candidate.CandidateListPage
+import com.example.jobfinder.presentation.candidate.CandidateManagementPage
+import com.example.jobfinder.presentation.candidate.CandidateProfilePage
+import com.example.jobfinder.presentation.forgotpassword.ForgetPage1
+import com.example.jobfinder.presentation.forgotpassword.ForgetPage2
+import com.example.jobfinder.presentation.forgotpassword.ForgetPage3
+import com.example.jobfinder.presentation.home.HomePage
+import com.example.jobfinder.presentation.login.LoginPage
+import com.example.jobfinder.presentation.login.LoginViewModel
+import com.example.jobfinder.presentation.message.ChatDetailPage
+import com.example.jobfinder.presentation.message.MessagePage
+import com.example.jobfinder.presentation.notification.NotificationPage
+import com.example.jobfinder.presentation.profile.ProfilePage
+import com.example.jobfinder.presentation.workspace.WorkspacePage
+import com.example.jobfinder.presentation.message.ChatViewModel
+import com.example.jobfinder.presentation.workspace.create.CreateJobPage
 import com.example.jobfinder.pages.jobdetail.JobDetailPage
 
 @Composable
@@ -57,6 +58,9 @@ fun AppNavHost(
         }
         composable(AppRoutes.CANDIDATE_LIST) {
             CandidateListPage(navController)
+        }
+        composable (AppRoutes.CANDIDATE_DETAIL){
+            CandidateProfilePage(navController)
         }
 
         composable( AppRoutes.MESSAGE) {
