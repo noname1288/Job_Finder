@@ -1,17 +1,22 @@
 package com.example.jobfinder.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Message
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -28,16 +33,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
-import com.example.jobfinder.model.FakeData.mockPosts
-import com.example.jobfinder.model.PostModel
+import com.example.jobfinder.data.entity.FakeData.mockPosts
+import com.example.jobfinder.data.entity.PostModel
 import com.example.jobfinder.R
+import com.example.jobfinder.navigation.AppRoutes
 
 
 @Composable
-fun HomePage() {
+fun HomePage(navController: NavController) {
     // Dùng LazyColumn nếu nội dung dài, cần scroll
     LazyColumn(
         modifier = Modifier
@@ -47,7 +54,7 @@ fun HomePage() {
     ) {
         /** TOP BAR + AVATAR + TÊN + VAI TRÒ */
         item {
-            HomeHeader()
+            HomeHeader(navController)
         }
 
         /** THẺ CHÀO NGÀY MỚI */
@@ -69,7 +76,7 @@ fun HomePage() {
         // items(listOfData) { post -> ... }
         // Ở đây demo sẵn mockPosts
         items(mockPosts) { post ->
-            PostItem(post)
+            LinerProgressPostItem(post, navController)
         }
 
         // Thêm khoảng trống ở cuối
@@ -80,10 +87,10 @@ fun HomePage() {
 }
 
 /* ----------------------------------------------------------------
-   TOP BAR (ví dụ đơn giản, hiển thị thời gian + avatar + icon)
+   TOP BAR (hiển thị avatar + icon Search + message)
 ---------------------------------------------------------------- */
 @Composable
-fun HomeHeader() {
+fun HomeHeader(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,8 +126,10 @@ fun HomeHeader() {
             IconButton(onClick = { /* TODO: Action search */ }) {
                 Icon(Icons.Default.Search, contentDescription = "search")
             }
-            IconButton(onClick = { /* TODO: Action notification */ }) {
-                Icon(Icons.Default.Notifications, contentDescription = "notifications")
+            IconButton(onClick = {
+                navController.navigate(AppRoutes.MESSAGE)
+            }) {
+                Icon(Icons.Outlined.Mail, contentDescription = "notifications")
             }
 
         }
@@ -196,7 +205,7 @@ fun OverviewSection() {
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
             )
             Text(
-                text = "Tất cả công việc của bạn",
+                text = "Tất cả công việc của bạn trong tháng này",
                 style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
             )
             Spacer(Modifier.height(8.dp))
@@ -252,7 +261,7 @@ fun PostListSection() {
             )
         )
         Text(
-            text = "Số bài đăng trong tháng",
+            text = "Bạn đang tìm ứng viên cho công việc mới",
             style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
         )
         Spacer(Modifier.height(8.dp))
@@ -263,7 +272,7 @@ fun PostListSection() {
    POST ITEM (hiển thị mỗi bài đăng)
 ---------------------------------------------------------------- */
 @Composable
-fun PostItem(post: PostModel) {
+fun LinerProgressPostItem(post: PostModel, navController: NavController) {
     val context = LocalContext.current
     val imageLoader = ImageLoader.Builder(context)
         .components {
@@ -273,8 +282,10 @@ fun PostItem(post: PostModel) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable(onClick = {
+                navController.navigate(AppRoutes.JOB_DETAIL)
+            }),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Tiêu đề bài đăng
@@ -302,19 +313,21 @@ fun PostItem(post: PostModel) {
                     fontSize = 16.sp
                 )
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
 
             // Thanh progress (demo)
             LinearProgressIndicator(
-                progress = post.progress, // 0f..1f
+                progress = {
+                    post.progress // 0f..1f
+                },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp),
+                    .fillMaxWidth().padding(8.dp)
+                    .height(4.dp),
                 color = Color(0xFF906CF2),
-                trackColor = Color.LightGray.copy(alpha = 0.3f)
+                trackColor = Color.LightGray.copy(alpha = 0.3f),
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
             // Thông tin: Địa điểm, số ứng viên, hạn
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -375,6 +388,6 @@ fun PostItem(post: PostModel) {
 
         }
     }
-    Spacer(Modifier.height(4.dp))
-    Divider(thickness = 0.dp, color = Color.Transparent) // chỉ để tạo khoảng trống
+    Spacer(Modifier.height(8.dp))
+    HorizontalDivider(thickness = 0.dp, color = Color.Transparent) // chỉ để tạo khoảng trống
 }

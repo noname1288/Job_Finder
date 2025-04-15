@@ -1,4 +1,4 @@
-package com.example.jobfinder.model
+package com.example.jobfinder.data.entity
 
 data class Job(
     val jobID: String,

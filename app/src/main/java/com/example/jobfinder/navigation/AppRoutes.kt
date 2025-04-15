@@ -19,5 +19,9 @@ object AppRoutes {
     val NOTIFICATION = "notification"
     val PROFILE = "profile"
 
+    val CANDIDATE_MANAGEMENT = "candidate_management"
+    val CANDIDATE_LIST = "candidate_list"
+    val CANDIDATE_DETAIL = "candidate_detail"
+
 
 }

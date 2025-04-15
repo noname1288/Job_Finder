@@ -1,4 +1,4 @@
-package com.example.jobfinder.model
+package com.example.jobfinder.data
 
 /**
  * Mỗi phòng chat có ID, tên, avatar, tin nhắn cuối, etc.

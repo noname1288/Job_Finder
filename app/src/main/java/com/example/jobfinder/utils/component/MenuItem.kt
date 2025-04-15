@@ -1,4 +1,4 @@
-package com.example.jobfinder.component
+package com.example.jobfinder.utils.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,19 +47,5 @@ fun MenuItem(modifier: Modifier = Modifier) {
 //        Spacer(modifier = Modifier.height(2.dp))
         Text("Ung vien", fontSize = 12.sp)
 
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MenuItemPreview(modifier: Modifier = Modifier) {
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            MenuItem()
-        }
     }
 }

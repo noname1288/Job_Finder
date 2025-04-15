@@ -1,4 +1,4 @@
-package com.example.jobfinder.feature.message.presentation
+package com.example.jobfinder.feature.message
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -16,31 +18,48 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.jobfinder.model.ChatItem
-import com.example.jobfinder.feature.message.presentation.ChatViewModel
+import com.example.jobfinder.data.ChatItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MessagePage(
     chatViewModel: ChatViewModel,
+    navController: NavController,
     onChatClicked: (ChatItem) -> Unit,
     modifier: Modifier = Modifier,
-    innerPadding: PaddingValues = PaddingValues()
 ) {
     val chatList by chatViewModel.chatList.observeAsState(emptyList())
 
-    LazyColumn(
-        modifier = modifier.padding(innerPadding),
-        contentPadding = PaddingValues(top = 24.dp)
-    ) {
-        items(chatList) { chat ->
-            ChatRow(
-                item = chat,
-                onClick = { onChatClicked(chat) }
+    Scaffold(
+        topBar = {
+            // Top bar custom: Nút back + Tiêu đề
+            TopAppBar(
+                title = { Text(text = "Message") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
-            Divider(color = Color.LightGray, thickness = 0.5.dp)
+        },
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = modifier.padding(innerPadding),
+            contentPadding = PaddingValues(top = 24.dp)
+        ) {
+            items(chatList) { chat ->
+                ChatRow(
+                    item = chat,
+                    onClick = { onChatClicked(chat) }
+                )
+                HorizontalDivider(color = Color.LightGray, thickness = 0.5.dp)
+            }
         }
     }
+
+
 }
 
 @Composable

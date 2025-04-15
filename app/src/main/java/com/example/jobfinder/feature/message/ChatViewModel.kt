@@ -1,11 +1,11 @@
-package com.example.jobfinder.feature.message.presentation
+package com.example.jobfinder.feature.message
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.jobfinder.feature.message.data.MessageData
-import com.example.jobfinder.model.ChatItem
-import com.example.jobfinder.model.mockChats
+import com.example.jobfinder.data.entity.MessageData
+import com.example.jobfinder.data.ChatItem
+import com.example.jobfinder.data.mockChats
 
 class ChatViewModel : ViewModel() {
 

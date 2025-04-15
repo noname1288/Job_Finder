@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.jobfinder.navigation.AppRoutes
 
 @Composable
 fun ProfilePage(navController: NavController) {
@@ -159,7 +160,11 @@ fun ProfilePage(navController: NavController) {
                     Text("Đăng xuất")
                 },
                 modifier = Modifier.clickable(onClick = {
-                    navController.navigate("login")
+                    navController.navigate(AppRoutes.LOGIN){
+                        popUpTo(AppRoutes.LOGIN){
+                            inclusive = true
+                        }
+                    }
                 })
             )
         }

@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.jobfinder.component.NotificationItem
+import com.example.jobfinder.utils.component.NotificationItem
 import com.example.jobfinder.utils.MyColorUtils
 
 

@@ -1,4 +1,4 @@
-package com.example.jobfinder.feature.message.presentation
+package com.example.jobfinder.feature.message
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,8 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.jobfinder.feature.message.data.MessageData
-import com.example.jobfinder.feature.message.presentation.ChatViewModel
+import com.example.jobfinder.data.entity.MessageData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

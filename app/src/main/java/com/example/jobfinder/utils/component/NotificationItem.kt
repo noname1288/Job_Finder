@@ -1,4 +1,4 @@
-package com.example.jobfinder.component
+package com.example.jobfinder.utils.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -55,10 +55,4 @@ fun NotificationItem(modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun NotificationItemPreview() {
-    NotificationItem()
 }
