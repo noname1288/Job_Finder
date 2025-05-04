@@ -30,7 +30,6 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     chatViewModel: ChatViewModel,
-    loginViewModel: LoginViewModel
 ) {
     val innerPadding = null
     NavHost(
@@ -81,7 +80,7 @@ fun AppNavHost(
         }
 
         composable( AppRoutes.LOGIN) {
-            LoginPage(navController, loginViewModel)
+            LoginPage(navController)
         }
         composable( AppRoutes.FORGOT_PASSWORD1) {
             ForgetPage1(navController)

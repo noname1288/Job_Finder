@@ -29,6 +29,8 @@ import com.example.jobfinder.presentation.message.ChatViewModel
 import com.example.jobfinder.navigation.AppNavHost
 import com.example.jobfinder.navigation.AppRoutes
 import com.example.jobfinder.utils.MyNavBarItem
+import com.example.jobfinder.presentation.login.LoginViewModelFactory
+import com.example.jobfinder.service_locator.AppContainer
 
 /**
  * Màn hình chính – chưa hẳn 1 screen.
@@ -41,7 +43,9 @@ fun MainScreen() {
 
     //khai bao viewmodel o composable root
     val chatViewModel: ChatViewModel = viewModel()
-    val loginViewModel: LoginViewModel = viewModel()
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(AppContainer.loginUseCase)
+    )
 
     // Theo dõi route hiện tại
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -141,7 +145,6 @@ fun MainScreen() {
         AppNavHost(
             navController = navController,
             chatViewModel = chatViewModel,
-            loginViewModel = loginViewModel,
 //            innerPadding = innerPadding
             modifier = Modifier.padding(innerPadding)
         )
