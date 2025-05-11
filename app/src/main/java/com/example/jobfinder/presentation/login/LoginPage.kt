@@ -58,15 +58,15 @@ fun LoginPage(modifier: Modifier,navController: NavController, authViewModel: Au
         if (state.isSuccess) {
             // Show success message first
 //            snackbarHostState.showSnackbar("Login successful!")
-            Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
             // Then navigate
             navController.safeNavigate(AppRoutes.HOME, isInclusive = true)
             // Reset state
-            authViewModel.onNavigatedToHome()
+//            authViewModel.onNavigatedToHome()
         }
 
         state.errorMessage?.let { error ->
-            Toast.makeText(context, "Error: $error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
         }
     }
 

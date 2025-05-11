@@ -1,5 +1,6 @@
 package com.example.jobfinder.data.remote
 
+import com.example.jobfinder.data.remote.api.JobAPI
 import com.example.jobfinder.data.remote.api.UserAPI
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,4 +18,5 @@ object RetrofitHelper {
     //api
     //login, register
     val userAPI: UserAPI by lazy { retrofit.create(UserAPI::class.java) }
+    val postAPI: JobAPI by lazy { retrofit.create(JobAPI::class.java) }
 }

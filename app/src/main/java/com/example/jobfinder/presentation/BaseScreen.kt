@@ -1,5 +1,6 @@
 package com.example.jobfinder.presentation
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,6 +36,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.jobfinder.navigation.AppNavHost
 import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.navigation.NavigationDestination
+import com.example.jobfinder.navigation.safeNavigate
 import com.example.jobfinder.presentation.message.ChatViewModel
 import com.example.jobfinder.service_locator.AppContainer
 import com.example.jobfinder.utils.MyNavBarItem
@@ -43,6 +47,7 @@ import com.example.jobfinder.utils.MyNavBarItem
  * Tại đây, ta có 1 NavController chung -> AppNavHost + BottomNav
  * Ẩn bottomBar khi route = "chat_detail/{chatId}"
  */
+@SuppressLint("RememberReturnType")
 @Composable
 fun BaseScreen() {
     val context = LocalContext.current
@@ -74,6 +79,14 @@ fun BaseScreen() {
     //create a coroutine scope for launching snackbars
     val scope = rememberCoroutineScope()
 
+    //observe login state
+    val isUserAlreadyLoggedIn by authViewModel.isUserAlreadyLoggedIn.collectAsState()
+
+    //determine start destination
+    val startDestination = remember(isUserAlreadyLoggedIn) {
+        if (isUserAlreadyLoggedIn) NavigationDestination.Home.route else NavigationDestination.Login.route
+    }
+
 
     // Ẩn bottom bar nếu route thuộc list dưới
     val notShowBottomBarRoutes = listOf(
@@ -97,6 +110,9 @@ fun BaseScreen() {
 
         //
         AppRoutes.MESSAGE,
+
+        //update profile pagfe
+        AppRoutes.UPDATE_PROFILE
     )
 
     val shouldShowBottomBar =
@@ -175,7 +191,7 @@ fun BaseScreen() {
             if (showFloatingButton) {
                 FloatingActionButton(
                     onClick = {
-                        navController.navigate(AppRoutes.CREATE_JOB)
+                        navController.safeNavigate(AppRoutes.CREATE_JOB, popUpToRoute = AppRoutes.WORK_SPACE)
                     }
                 ) {
                     Icon(
@@ -196,7 +212,9 @@ fun BaseScreen() {
             //pass the snackbar state and scope to the NavHost
             snackbarHostState = snackbarHostState,
             snackbarScope = scope,
-            authViewModel = authViewModel
+            authViewModel = authViewModel,
+            startDestination = startDestination // Pass the dynamic start destination
+
         )
     }
 }

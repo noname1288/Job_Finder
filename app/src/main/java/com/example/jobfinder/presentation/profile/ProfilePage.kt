@@ -29,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.navigation.safeNavigate
 import com.example.jobfinder.presentation.AuthViewModel
 
 @Composable
@@ -127,7 +129,10 @@ fun ProfilePage(navController: NavController, authViewModel: AuthViewModel) {
                     Icon(Icons.Default.AccountBox, contentDescription = null)
                 },
                 headlineContent = {
-                    Text("Thông tin")
+                    Text("Chỉnh sửa thông tin")
+                },
+                modifier = Modifier.clickable{
+                    navController.safeNavigate(AppRoutes.UPDATE_PROFILE, popUpToRoute = AppRoutes.PROFILE)
                 }
             )
             ListItem(

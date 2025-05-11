@@ -1,6 +1,6 @@
 package com.example.jobfinder.data.remote.dto.request
 
-data class UserLoginRequest(
+data class LoginUserRequest(
     val email: String,
     val password: String
 )
