@@ -19,18 +19,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jobfinder.R
 
 @Composable
 fun NotificationItem(modifier: Modifier = Modifier) {
-    Row(Modifier.padding(start = 12.dp, end = 12.dp, top = 24.dp, bottom = 24.dp),
-        verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.padding(start = 12.dp, end = 12.dp, top = 24.dp, bottom = 24.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Image(
             painterResource(R.drawable.avt), contentDescription = null,
-            modifier = Modifier.size(64.dp).clip(RoundedCornerShape(10.dp)).padding(start = 8.dp)
+            modifier = Modifier
+                .size(64.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .padding(start = 8.dp)
         )
 
         Spacer(Modifier.width(12.dp))

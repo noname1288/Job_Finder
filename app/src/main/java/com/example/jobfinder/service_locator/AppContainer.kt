@@ -4,6 +4,7 @@ import com.example.jobfinder.data.remote.RetrofitHelper
 import com.example.jobfinder.data.remote.repository.UserRepositoryImpl
 import com.example.jobfinder.domain.repository.UserRepository
 import com.example.jobfinder.domain.usecase.LoginUseCase
+import com.example.jobfinder.domain.usecase.RegisterUseCase
 
 
 /**
@@ -11,11 +12,17 @@ import com.example.jobfinder.domain.usecase.LoginUseCase
  * Giữ SINGLETON cho toàn app.
  */
 object AppContainer {
-
     /* ---------- Data layer ---------- */
-    private val userApi            = RetrofitHelper.userAPI          // Retrofit service
-    private val userRepository: UserRepository = UserRepositoryImpl(userApi)
+    private val userApi = RetrofitHelper.userAPI          // Retrofit service
+    private val userRepository: UserRepository by lazy {
+        UserRepositoryImpl(userApi)
+    }
 
     /* ---------- Domain layer ---------- */
-    val loginUseCase               = LoginUseCase(userRepository)
+    val loginUseCase by lazy {
+        LoginUseCase(userRepository)
+    }
+    val registerUseCase by lazy {
+        RegisterUseCase(userRepository)
+    }
 }

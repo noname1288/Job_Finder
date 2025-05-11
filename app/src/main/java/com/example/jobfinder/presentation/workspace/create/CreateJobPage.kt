@@ -141,7 +141,7 @@ fun CreateJobPage(navController: NavController) {
                 onValueChange = { },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable() {
+                    .clickable {
                         showDatePickerRange = true
                     },
                 readOnly = true,
@@ -161,7 +161,7 @@ fun CreateJobPage(navController: NavController) {
                 onValueChange = { },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable() {
+                    .clickable {
                         showDatePicker = true
                     },
                 readOnly = true,
@@ -226,9 +226,11 @@ fun CreateJobPage(navController: NavController) {
 fun AddBottomSheetContent(
     onApply: () -> Unit //chuyen doi state
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
         Text(
             "Tạo công việc mới", style = TextStyle(
                 fontSize = 22.sp,
@@ -246,11 +248,13 @@ fun AddBottomSheetContent(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(Modifier.height(24.dp))
-        Button(onClick = {
-            //todo add new job
-        }, modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .width(250.dp)) {
+        Button(
+            onClick = {
+                //todo add new job
+            }, modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .width(250.dp)
+        ) {
             Text("Tạo ngay")
         }
         Button(
@@ -275,7 +279,7 @@ fun DatePickerInput(
 ) {
     var datePickerState = rememberDatePickerState() //state của datepicker
 
-    androidx.compose.material3.DatePickerDialog(
+    DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {

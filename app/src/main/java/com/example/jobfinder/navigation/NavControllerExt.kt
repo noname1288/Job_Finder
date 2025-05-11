@@ -3,12 +3,15 @@ package com.example.jobfinder.navigation
 import androidx.navigation.NavController
 
 
-/**
- * Điều hướng chuẩn có xử lý:
- * - Không trùng route (launchSingleTop)
- * - Quay lại đúng màn hình gốc (popUpTo)
- * - Giữ lại state (restoreState)
- */
+/*
+*Analysis:
+
+✅ Sets launchSingleTop = true to avoid duplicate screens
+✅ Configures popUpTo with saveState option
+✅ Handles restoration of state
+✅ Default popUpToRoute is HOME, which makes sense as a common base
+✅ Good default parameters that make the function flexible
+* */
 fun NavController.safeNavigate(
     route: String,
     popUpToRoute: String = AppRoutes.HOME,
@@ -25,6 +28,14 @@ fun NavController.safeNavigate(
     }
 }
 
+/*
+*Analysis:
+
+✅ Safely checks if popBackStack is possible
+✅ Simple utility function with clear purpose
+✅ Contains comment space for further implementation
+* */
+
 fun NavController.popBackIfCan() {
     // Nếu có thể pop ra khỏi stack thì tiến hành pop
     if (popBackStack()) {
@@ -32,6 +43,14 @@ fun NavController.popBackIfCan() {
     }
 }
 
+/*
+*Analysis:
+
+✅ Handles formatting of route with arguments
+✅ Uses same navigation options as safeNavigate
+✅ Uses varargs for flexible number of arguments
+Usage example: navController.navigateWithArgs("detail/%s", itemId)
+* */
 fun NavController.navigateWithArgs(
     route: String,
     vararg args: Any,
@@ -51,7 +70,14 @@ fun NavController.navigateWithArgs(
     }
 }
 
+/*
+*Analysis:
 
+✅ Checks current route to prevent unnecessary navigation
+✅ Reuses safeNavigate for consistent behavior
+✅ Prevents duplicate navigation requests
+Usage example: navController.navigateOnce(AppRoutes.DETAILS)
+* */
 fun NavController.navigateOnce(
     route: String,
     popUpToRoute: String = AppRoutes.HOME,
@@ -64,5 +90,7 @@ fun NavController.navigateOnce(
         safeNavigate(route, popUpToRoute, isInclusive, restore)
     }
 }
+
+
 
 

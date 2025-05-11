@@ -1,27 +1,31 @@
 package com.example.jobfinder.navigation
 
 object AppRoutes {
-    val HOME = "home"
+    const val HOME = "home"
 
-    val LOGIN = "login"
-    val REGISTER = "register"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
 
-    val FORGOT_PASSWORD1 = "forgot_password1"
-    val FORGOT_PASSWORD2 = "forgot_password2"
-    val FORGOT_PASSWORD3= "forgot_password3"
+    const val FORGOT_PASSWORD1 = "forgot_password1"
+    const val FORGOT_PASSWORD2 = "forgot_password2"
+    const val FORGOT_PASSWORD3 = "forgot_password3"
 
-    val WORK_SPACE = "workspace"
-    val JOB_DETAIL = "job_detail"
-    val CREATE_JOB = "create_job"
+    const val WORK_SPACE = "workspace"
+    const val JOB_DETAIL = "job_detail"
+    const val CREATE_JOB = "create_job"
 
 
-    val MESSAGE = "message"
-    val NOTIFICATION = "notification"
-    val PROFILE = "profile"
+    const val MESSAGE = "message"
+    const val NOTIFICATION = "notification"
+    const val PROFILE = "profile"
 
-    val CANDIDATE_MANAGEMENT = "candidate_management"
-    val CANDIDATE_LIST = "candidate_list"
-    val CANDIDATE_DETAIL = "candidate_detail"
+    const val CANDIDATE_MANAGEMENT = "candidate_management"
+    const val CANDIDATE_LIST = "candidate_list"
+    const val CANDIDATE_DETAIL = "candidate_detail"
 
+    // ...existing routes...
+    const val CHAT_DETAIL = "chat_detail/{chatId}"
+    // Route builder function
+    fun chatDetail(chatId: String) = "chat_detail/$chatId"
 
 }

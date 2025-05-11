@@ -38,13 +38,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.jobfinder.R
 import com.example.jobfinder.domain.entity.FakeData.mockPosts
-import com.example.jobfinder.presentation.home.LinerProgressPostItem
 import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.presentation.home.LinerProgressPostItem
 
 
 @Composable
 fun WorkspacePage(navController: NavHostController) {
-    val events = 1..10
+    1..10
     Column(
         modifier = Modifier
 //            .padding(innerPadding)
@@ -75,7 +75,7 @@ fun WorkspacePage(navController: NavHostController) {
 fun TabLayout(modifier: Modifier = Modifier, navController: NavController) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     var tabTitleList = listOf("Đang tuyển", "Thực thi")
-    Column() {
+    Column {
         TabRow(selectedTabIndex = selectedTabIndex) {
             tabTitleList.forEachIndexed { index, title ->
                 Tab(
@@ -95,7 +95,7 @@ fun TabLayout(modifier: Modifier = Modifier, navController: NavController) {
 
             1 -> {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
-                    for (i in 1..5){
+                    for (i in 1..5) {
                         JobCard(navController)
                     }
                 }
@@ -155,7 +155,7 @@ fun JobCard(navController: NavController) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Column(modifier = Modifier.weight(0.5f)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically

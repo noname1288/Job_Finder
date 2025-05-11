@@ -26,24 +26,28 @@ import com.example.jobfinder.navigation.AppRoutes
 @Composable
 fun ForgetPage3(navController: NavController) {
 
-    var forgetEmail by remember { mutableStateOf("") }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(85.dp))
 
-        Text(text = "Đổi mật khẩu \n" +
-                "thành công", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "Đổi mật khẩu \n" +
+                    "thành công", fontSize = 36.sp, fontWeight = FontWeight.Bold
+        )
 
-        Spacer( Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
 
         Spacer(Modifier.height(85.dp))
 
         //Image
-        Image(painter = painterResource(id = R.drawable.img_person_emailtick), contentDescription = null,
-            Modifier.size(width = 128.dp, height = 106.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_person_emailtick),
+            contentDescription = null,
+            Modifier.size(width = 128.dp, height = 106.dp)
+        )
 
         Spacer(Modifier.height(52.dp))
 
@@ -52,7 +56,7 @@ fun ForgetPage3(navController: NavController) {
         Spacer(Modifier.height(52.dp))
 
         Spacer(Modifier.height(16.dp))
-        Button(onClick = {navController.navigate(AppRoutes.LOGIN)}){
+        Button(onClick = { navController.navigate(AppRoutes.LOGIN) }) {
             Text("QUAY LẠI TRANG ĐĂNG NHẬP")
         }
 

@@ -74,7 +74,7 @@ fun CandidateListPage(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Rounded.ArrowBackIosNew, contentDescription = "Back")
                     }
                 },
@@ -98,7 +98,12 @@ fun CandidateListPage(
                     onReject = {
                         showDialog = StatusDialog.REJECT
                     },
-                    onClickable = {navController.safeNavigate(AppRoutes.CANDIDATE_DETAIL, popUpToRoute = AppRoutes.CANDIDATE_LIST)}
+                    onClickable = {
+                        navController.safeNavigate(
+                            AppRoutes.CANDIDATE_DETAIL,
+                            popUpToRoute = AppRoutes.CANDIDATE_LIST
+                        )
+                    }
                 )
                 when (showDialog) {
                     StatusDialog.ACCEPT -> {
@@ -126,6 +131,7 @@ fun CandidateListPage(
                             icon = Icons.Default.Warning
                         )
                     }
+
                     else -> {}
                 }
             }
@@ -139,7 +145,7 @@ fun CandidateItem(
     candidate: Candidate,
     onAccept: () -> Unit = {},
     onReject: () -> Unit = {},
-    onClickable:() ->Unit
+    onClickable: () -> Unit
 ) {
 
     Card(
@@ -165,7 +171,8 @@ fun CandidateItem(
                     contentDescription = "Avatar",
                     modifier = Modifier
                         .size(56.dp)
-                        .clip(CircleShape).clickable(){
+                        .clip(CircleShape)
+                        .clickable {
                             onClickable()
                         }
                 )
@@ -173,7 +180,7 @@ fun CandidateItem(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 // 2) Thông tin ứng viên
-                Column() {
+                Column {
                     // Tên và tick xanh và button xem chi tiết
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(

@@ -1,4 +1,4 @@
-package com.example.jobfinder.data.remote.dto.response
+package com.example.jobfinder.data.remote.dto
 
 //cấu trúc response
 /*
@@ -7,7 +7,7 @@ package com.example.jobfinder.data.remote.dto.response
 * data: {}
 * */
 data class BaseResponse<T>(
-    val status: String,
+    val code:Int,
     val message: String?,
     val data: T?
 )

@@ -45,7 +45,8 @@ import com.example.jobfinder.domain.entity.Seeker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CandidateProfilePage( navController: NavController
+fun CandidateProfilePage(
+    navController: NavController
 ) {
     val seeker = Seeker(
         name = "Nguyễn Bằng Long",
@@ -78,7 +79,7 @@ fun CandidateProfilePage( navController: NavController
     // Sử dụng Scaffold để có TopBar ở trên, nội dung ở dưới
     Scaffold(
         topBar = {
-            TopBar(title = "Xem chi tiết ứng viên", onBack = {navController.popBackStack()})
+            TopBar(title = "Xem chi tiết ứng viên", onBack = { navController.popBackStack() })
         }
     ) { paddingValues ->
         LazyColumn(
@@ -266,7 +267,9 @@ fun BasicInfoSection(seeker: Seeker) {
 @Composable
 fun InfoRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

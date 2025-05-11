@@ -3,9 +3,9 @@ package com.example.jobfinder.presentation.message
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.jobfinder.domain.entity.MessageData
 import com.example.jobfinder.data.ChatItem
 import com.example.jobfinder.data.mockChats
+import com.example.jobfinder.domain.entity.MessageData
 
 class ChatViewModel : ViewModel() {
 

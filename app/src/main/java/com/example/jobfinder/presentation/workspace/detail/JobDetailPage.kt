@@ -255,16 +255,20 @@ fun JobDetailPage(
 
 @Composable
 fun DeleteBottomSheetContent() {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 16.dp, bottom = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, bottom = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
     {
-        Text("Hoành thành công việc", style = TextStyle(
-            fontSize = 22.sp,
-            fontWeight = FontWeight.SemiBold,
-        ),
-            modifier = Modifier.align(Alignment.CenterHorizontally))
+        Text(
+            "Hoành thành công việc", style = TextStyle(
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+            ),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
         Spacer(Modifier.height(16.dp))
         Text(
             text = "Bạn thực sự muốn kết thúc nó?",
@@ -305,11 +309,13 @@ fun StatusBottomSheetContent(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text("Trạng thái công việc", style = TextStyle(
-            fontSize = 22.sp,
-            fontWeight = FontWeight.SemiBold,
-        ),
-            modifier = Modifier.align(Alignment.CenterHorizontally))
+        Text(
+            "Trạng thái công việc", style = TextStyle(
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+            ),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
         Spacer(Modifier.height(16.dp))
         Text(
             text = "Quyết định thay đổi trạng thái giúp bạn kiểm soát tiến trình công việc",
@@ -327,16 +333,18 @@ fun StatusBottomSheetContent(
         // ... RadioButtonGroup "Đang tuyển", "Đang xử lý", "Hoàn thành" ...
         Column(Modifier.selectableGroup()) {
             radioOptions.forEach { text ->
-                Row(Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .selectable(
-                        selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text) },
-                        role = Role.RadioButton
-                    )
-                    .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .selectable(
+                            selected = (text == selectedOption),
+                            onClick = { onOptionSelected(text) },
+                            role = Role.RadioButton
+                        )
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     RadioButton(selected = (text == selectedOption), onClick = null)
                     Text(
                         text = text,

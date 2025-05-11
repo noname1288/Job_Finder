@@ -86,12 +86,14 @@ fun CheckedEmailPage() {
                     Color.Black
                 },
                 fontStyle = FontStyle.Italic,
-                modifier = Modifier.clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
-                    println("Text đã được nhấn!")
-                }.padding(16.dp)
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        println("Text đã được nhấn!")
+                    }
+                    .padding(16.dp)
             )
 
         }

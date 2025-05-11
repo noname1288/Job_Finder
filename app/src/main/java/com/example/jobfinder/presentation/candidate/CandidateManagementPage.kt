@@ -49,30 +49,31 @@ fun CandidateManagementPage(navController: NavController) {
 //        Spacer(modifier = Modifier.height(12.dp))
 
 
-        LazyColumn (modifier = Modifier.fillMaxSize()){
-            item {
-                BoxBackground("Công việc của bạn", "Hãy để chúng tôi trợ giúp", true, R.raw.vector_job)
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            BoxBackground("Công việc của bạn", "Hãy để chúng tôi trợ giúp", true, R.raw.vector_job)
 
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-                CandidateTrackingSection(20,5)
+            CandidateTrackingSection(20, 5)
 
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            item {
-                CandidateItem("03 tháng 2 năm 2025", "E-Learning", "3/5",navController)
-                CandidateItem("01 tháng 2 năm 2025", "E-Learning1", "5/5", navController)
-                CandidateItem("15 tháng 2 năm 2025", "E-Learning2", "7/5", navController)
-            }
-            item{
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+            Spacer(modifier = Modifier.height(12.dp))
         }
+
+        item {
+            CandidateItem("03 tháng 2 năm 2025", "E-Learning", "3/5", navController)
+            CandidateItem("01 tháng 2 năm 2025", "E-Learning1", "5/5", navController)
+            CandidateItem("15 tháng 2 năm 2025", "E-Learning2", "7/5", navController)
+        }
+        item {
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
 
 
 //    }
 }
+
 @Composable
 fun CandidateItem(
     date: String,
@@ -83,7 +84,8 @@ fun CandidateItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp).clickable(){
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable {
                 navController.navigate(AppRoutes.CANDIDATE_LIST)
             },
         shape = RoundedCornerShape(12.dp),

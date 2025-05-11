@@ -11,8 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.jobfinder.utils.component.NotificationItem
 import com.example.jobfinder.utils.MyColorUtils
+import com.example.jobfinder.utils.component.NotificationItem
 
 
 @Composable
@@ -22,7 +22,7 @@ fun NotificationPage() {
             .fillMaxSize()
 //            .padding(innerPadding),
 
-        ) {
+    ) {
         // tap layout
         TabLayoutNotification()
     }
@@ -30,8 +30,7 @@ fun NotificationPage() {
 
 @Composable
 fun TabLayoutNotification() {
-    var selectedTabIndex by remember { mutableStateOf(0) }
-    var tabTitleList = listOf("Tin nhắn", "Thông báo")
+    listOf("Tin nhắn", "Thông báo")
     Column {
         NotiListContent()
     }
@@ -43,7 +42,10 @@ fun NotiListContent(modifier: Modifier = Modifier) {
     LazyColumn {
         items(notiList.count()) {
             NotificationItem()
-            Divider(color = MyColorUtils.Grey300, thickness = 1.dp) // Thêm đường gạch ngang sau mỗi thông báo
+            Divider(
+                color = MyColorUtils.Grey300,
+                thickness = 1.dp
+            ) // Thêm đường gạch ngang sau mỗi thông báo
         }
     }
 }

@@ -32,17 +32,22 @@ import com.example.jobfinder.navigation.AppRoutes
 @Composable
 fun ForgetPage2(navController: NavController) {
 
-    var forgetEmail by remember { mutableStateOf("") }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(64.dp))
 
-        Text(text = "Kiểm tra email \n" +
-                "của bạn", fontSize = 36.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, style = TextStyle(lineHeight = 1.em))
+        Text(
+            text = "Kiểm tra email \n" +
+                    "của bạn",
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            style = TextStyle(lineHeight = 1.em)
+        )
 
-        Spacer( Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
         Text(
             text = "Chúng tôi đã gửi yêu cầu đặt lại mật khẩu đến địa chỉ email brandonelouis@gmial.com.",
@@ -55,21 +60,27 @@ fun ForgetPage2(navController: NavController) {
         Spacer(Modifier.height(64.dp))
 
         //Image
-        Image(painter = painterResource(id = R.drawable.img_person_openemail), contentDescription = null,
-            Modifier.size(width = 128.dp, height = 106.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_person_openemail),
+            contentDescription = null,
+            Modifier.size(width = 128.dp, height = 106.dp)
+        )
 
 
         //button area
         Spacer(Modifier.height(52.dp))
-        Button(onClick = {navController.navigate(AppRoutes.FORGOT_PASSWORD3)}){
+        Button(onClick = { navController.navigate(AppRoutes.FORGOT_PASSWORD3) }) {
             Text("MỞ EMAIL CỦA BẠN")
         }
         Spacer(Modifier.height(16.dp))
-        Button(onClick = {navController.navigate(AppRoutes.LOGIN)}){
+        Button(onClick = { navController.navigate(AppRoutes.LOGIN) }) {
             Text("QUAY LẠI TRANG ĐĂNG NHẬP")
         }
         Spacer(Modifier.height(16.dp))
-        Text(text = "Gửi lại nếu bạn chưa nhận được email?", modifier = Modifier.clickable(onClick = {}))
+        Text(
+            text = "Gửi lại nếu bạn chưa nhận được email?",
+            modifier = Modifier.clickable(onClick = {})
+        )
 
     }
 }

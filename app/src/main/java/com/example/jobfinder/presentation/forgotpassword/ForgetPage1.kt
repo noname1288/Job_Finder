@@ -39,7 +39,7 @@ fun ForgetPage1(navController: NavController) {
 
         Text(text = "Quên mật khẩu", fontSize = 36.sp, fontWeight = FontWeight.Bold)
 
-        Spacer( Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         Text(
             text = "Để đặt lại mật khẩu, bạn cần có email hoặc số điện thoại di động có thể xác thực.",
@@ -52,24 +52,26 @@ fun ForgetPage1(navController: NavController) {
         Spacer(Modifier.height(85.dp))
 
         //Image
-        Image(painter = painterResource(id = R.drawable.img_person_key), contentDescription = null,
-            Modifier.size(width = 128.dp, height = 106.dp))
+        Image(
+            painter = painterResource(id = R.drawable.img_person_key), contentDescription = null,
+            Modifier.size(width = 128.dp, height = 106.dp)
+        )
 
         Spacer(Modifier.height(52.dp))
         //email
         OutlinedTextField(
-            value =forgetEmail,
-            onValueChange = {forgetEmail = it},
-            label = {Text("Email")}
+            value = forgetEmail,
+            onValueChange = { forgetEmail = it },
+            label = { Text("Email") }
         )
 
         //button area
         Spacer(Modifier.height(52.dp))
-        Button(onClick = {navController.navigate(AppRoutes.FORGOT_PASSWORD2)}){
+        Button(onClick = { navController.navigate(AppRoutes.FORGOT_PASSWORD2) }) {
             Text("Đặt lại mật khẩu")
         }
         Spacer(Modifier.height(16.dp))
-        Button(onClick = {navController.popBackStack()}){
+        Button(onClick = { navController.popBackStack() }) {
             Text("Quay lại")
         }
 
