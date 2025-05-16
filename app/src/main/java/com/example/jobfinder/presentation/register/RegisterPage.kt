@@ -65,7 +65,7 @@ fun RegisterPage(navController: NavController, authViewModel: AuthViewModel) {
         }
 
         state.errorMessage?.let { error ->
-            Toast.makeText(context, "Lỗi: $error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
         }
     }
 

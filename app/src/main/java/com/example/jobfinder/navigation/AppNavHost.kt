@@ -25,6 +25,7 @@ import com.example.jobfinder.presentation.message.ChatViewModel
 import com.example.jobfinder.presentation.message.MessagePage
 import com.example.jobfinder.presentation.notification.NotificationPage
 import com.example.jobfinder.presentation.profile.ProfilePage
+import com.example.jobfinder.presentation.profile.update.UpdateProfilePage
 import com.example.jobfinder.presentation.register.RegisterPage
 import com.example.jobfinder.presentation.workspace.WorkspacePage
 import com.example.jobfinder.presentation.workspace.create.CreateJobPage
@@ -40,10 +41,11 @@ fun AppNavHost(
     snackbarScope: CoroutineScope,
     authViewModel: AuthViewModel,
     chatViewModel: ChatViewModel,
+    startDestination: String
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavigationDestination.Login.route,
+        startDestination = AppRoutes.HOME,
         modifier = modifier
     ) {
         /*
@@ -152,6 +154,9 @@ fun AppNavHost(
          * */
         composable(AppRoutes.PROFILE) {
             ProfilePage(navController, authViewModel)
+        }
+        composable(AppRoutes.UPDATE_PROFILE) {
+            UpdateProfilePage(navController)
         }
 
 

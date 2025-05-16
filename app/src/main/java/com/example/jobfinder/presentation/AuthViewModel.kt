@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jobfinder.core.NetworkResult
 import com.example.jobfinder.data.local.UserSessionManager
+import com.example.jobfinder.data.remote.dto.request.LoginUserRequest
+import com.example.jobfinder.data.remote.dto.request.RegisterUserRequest
 import com.example.jobfinder.data.remote.dto.response.LoginUserResponse
 import com.example.jobfinder.domain.usecase.LoginUseCase
 import com.example.jobfinder.domain.usecase.RegisterUseCase
@@ -27,7 +29,16 @@ class AuthViewModel(
     private val _stateRegister = MutableStateFlow(RegisterState())
     val stateRegister: StateFlow<RegisterState> = _stateRegister
 
+    //check if user is logged in
+    val isUserAlreadyLoggedIn = MutableStateFlow(false)
 
+    init {
+        viewModelScope.launch {
+            UserSessionManager.isLoggedInFlow.collect { loggedIn ->
+                isUserAlreadyLoggedIn.value = loggedIn
+            }
+        }
+    }
     //event handler for form field changes
     fun onLoginEvent(event: LoginEvent) {
         when (event) {
@@ -70,33 +81,23 @@ class AuthViewModel(
             _stateLogin.value = _stateLogin.value.copy(isLoading = true, errorMessage = null)
 
             //use the login usecase
-            val result = loginUseCase(
-                username = stateLogin.value.username,
-                password = stateLogin.value.password
-            )
+            val request = LoginUserRequest(stateLogin.value.username, stateLogin.value.password )
+            val result = loginUseCase(request)
 
             //update state based on the result
             when (result){
-                NetworkResult.Loading -> {
-                    // This state is already handled when starting the registration process
-                }
                 is NetworkResult.Error -> {
-                    Log.e("AuthViewModel", "Login failed: ${result.message}")
                     _stateLogin.update { it.copy(isLoading = false, errorMessage = result.message) }
                 }
                 is NetworkResult.Success -> {
                     //store user data
                     val userPrefs = result.data
-                    Log.d("AuthViewModel", "Store user data: ${result.data}")
                     UserSessionManager.setUserData(userPrefs)
                     //handle when state change
-                    Log.d("AuthViewModel", "Login successful: ${result.data}")
                     _stateLogin.update {
                         it.copy(isLoading = false, isSuccess = true, userData = result.data)
                     }
-
                 }
-
             }
         }
     }
@@ -107,14 +108,13 @@ class AuthViewModel(
             _stateRegister.update { it.copy(isLoading = true, errorMessage = null) }
 
             //use the registration usecase
-            val result = registerUseCase(
-                fullName = stateRegister.value.fullName,
-                email = stateRegister.value.email,
-                password = stateRegister.value.password,
-                role = stateRegister.value.role
+            val request = RegisterUserRequest(
+                email = _stateRegister.value.email,
+                password = _stateRegister.value.password,
+                fullName = _stateRegister.value.fullName,
+                role = _stateRegister.value.role
             )
-
-            Log.d("AuthViewModel", "Register successful: $result")
+            val result = registerUseCase(request)
 
             //update state based on the result
             when(result){

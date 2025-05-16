@@ -7,19 +7,17 @@ data class Job(
     var requirement: String, // Yêu cầu
     var benefit: String, //quyeefn lợi
     var location: String,
-    var salary: Float,
+    var salary: String,
     var shift: Shift, //ca làm việc
-    var createAt: String, //thời điểm tạo (String/ Long)
-    var deadline: String,
-    var duration: String, // hạn của bài đăng --> để chuyển trạng thái hủy/ bắt đầu thực hiện việc đó == đóng tuyển
+    var createAt: String, //thời điểm tạo bài đăng
+    var endAt: String, //thời điểm kết thúc bài đăng tuyển
+    var duration: String, // thời gian để thực hiện công việc?
     var recuiter: String, // ? liên kết với công ty tuyển dụng hay id nhà tuyển dụng đăng bài đó?
     var quantity: Int, //số lượng tuyển
 )
 
 data class Shift(
-//ca làm việc
-    val shiftID: String,
-    var name: String?,
-    var startTime: String,
-    var endTime: String,
+    val endTime: String,
+    val name: String,
+    val startTime: String
 )

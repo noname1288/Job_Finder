@@ -17,7 +17,9 @@ object AppRoutes {
 
     const val MESSAGE = "message"
     const val NOTIFICATION = "notification"
+
     const val PROFILE = "profile"
+    const val UPDATE_PROFILE = "update_profile"
 
     const val CANDIDATE_MANAGEMENT = "candidate_management"
     const val CANDIDATE_LIST = "candidate_list"
