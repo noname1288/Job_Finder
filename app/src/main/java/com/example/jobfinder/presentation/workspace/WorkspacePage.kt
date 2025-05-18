@@ -37,14 +37,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.jobfinder.R
-import com.example.jobfinder.domain.entity.FakeData.mockPosts
 import com.example.jobfinder.navigation.AppRoutes
-import com.example.jobfinder.presentation.home.LinerProgressPostItem
 
 
 @Composable
-fun WorkspacePage(navController: NavHostController) {
-    1..10
+fun WorkspacePage(navController: NavController) {
     Column(
         modifier = Modifier
 //            .padding(innerPadding)
@@ -52,58 +49,13 @@ fun WorkspacePage(navController: NavHostController) {
     ) {
         BoxBackground("Quản lý thời gian", "Đừng bỏ lỡ điều gì nhé", false, R.drawable.alarm_clock)
 
-        // tap layout
-        TabLayout(navController = navController)
-
-//        //job list == (job <- post chuyen trang thai)
-//        Box(modifier = Modifier.weight(0.5f)) {
-//            LazyColumn(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(MyColorUtils.Grey200),
-//            ) {
-//                items(events.count()) {
-//                    PostCard(navController)
-//                }
-//            }
-//
-//        }
-    }
-}
-
-@Composable
-fun TabLayout(modifier: Modifier = Modifier, navController: NavController) {
-    var selectedTabIndex by remember { mutableStateOf(0) }
-    var tabTitleList = listOf("Đang tuyển", "Thực thi")
-    Column {
-        TabRow(selectedTabIndex = selectedTabIndex) {
-            tabTitleList.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTabIndex == index, // Xác định tab nào được chọn
-                    onClick = { selectedTabIndex = index }, // Cập nhật khi người dùng nhấn tab
-                    text = { Text(text = title) } // Nội dung của mỗi tab
-                )
-            }
-        }
-        // Hiển thị nội dung của tab đang được chọn
-        when (selectedTabIndex) {
-            0 -> {
-                Column(Modifier.verticalScroll(rememberScrollState())) {
-                    mockPosts.forEach { postItem -> LinerProgressPostItem(postItem, navController) }
-                }
-            }
-
-            1 -> {
-                Column(Modifier.verticalScroll(rememberScrollState())) {
-                    for (i in 1..5) {
-                        JobCard(navController)
-                    }
-                }
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            for (i in 1..5) {
+                JobCard(navController)
             }
         }
     }
 }
-
 
 @Composable
 fun JobCard(navController: NavController) {

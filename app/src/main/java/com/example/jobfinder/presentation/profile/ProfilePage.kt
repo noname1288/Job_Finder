@@ -182,11 +182,8 @@ fun ProfilePage(navController: NavController, authViewModel: AuthViewModel) {
                 },
                 modifier = Modifier.clickable(onClick = {
                     authViewModel.logout()
-                    navController.navigate(AppRoutes.LOGIN) {
-                        popUpTo(AppRoutes.LOGIN) {
-                            inclusive = true
-                        }
-                    }
+                    navController.safeNavigate(route = AppRoutes.LOGIN, isInclusive = true)
+
                 })
             )
         }

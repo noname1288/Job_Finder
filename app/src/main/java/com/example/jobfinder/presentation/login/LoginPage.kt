@@ -62,7 +62,7 @@ fun LoginPage(modifier: Modifier,navController: NavController, authViewModel: Au
             // Then navigate
             navController.safeNavigate(AppRoutes.HOME, isInclusive = true)
             // Reset state
-//            authViewModel.onNavigatedToHome()
+            authViewModel.onNavigatedToHome()
         }
 
         state.errorMessage?.let { error ->

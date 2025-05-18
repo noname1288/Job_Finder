@@ -136,6 +136,9 @@ class AuthViewModel(
 
     fun onNavigatedToHome() {
         _stateLogin.update { it.copy(isSuccess = false) }
+
+        //clear data
+        _stateLogin.update { it.copy(username = "", password = "") }
     }
     fun onNavigatedToRegister() {
         _stateRegister.update { it.copy(isSuccess = false) }

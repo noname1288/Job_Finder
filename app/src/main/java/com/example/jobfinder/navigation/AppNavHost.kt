@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.jobfinder.pages.jobdetail.JobDetailPage
 import com.example.jobfinder.presentation.AuthViewModel
-import com.example.jobfinder.presentation.BaseViewModelFactory
 import com.example.jobfinder.presentation.candidate.CandidateListPage
 import com.example.jobfinder.presentation.candidate.CandidateManagementPage
 import com.example.jobfinder.presentation.candidate.CandidateProfilePage
@@ -19,6 +18,7 @@ import com.example.jobfinder.presentation.forgotpassword.ForgetPage1
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage2
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage3
 import com.example.jobfinder.presentation.home.HomePage
+import com.example.jobfinder.presentation.home.HomeViewModel
 import com.example.jobfinder.presentation.login.LoginPage
 import com.example.jobfinder.presentation.message.ChatDetailPage
 import com.example.jobfinder.presentation.message.ChatViewModel
@@ -29,7 +29,6 @@ import com.example.jobfinder.presentation.profile.update.UpdateProfilePage
 import com.example.jobfinder.presentation.register.RegisterPage
 import com.example.jobfinder.presentation.workspace.WorkspacePage
 import com.example.jobfinder.presentation.workspace.create.CreateJobPage
-import com.example.jobfinder.service_locator.AppContainer
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -45,7 +44,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = AppRoutes.HOME,
+        startDestination = startDestination,
         modifier = modifier
     ) {
         /*
@@ -77,8 +76,10 @@ fun AppNavHost(
         * TRANG HOME
          * */
         //Màn hình trang chính
-        composable(NavigationDestination.Home.route) {
-            HomePage(navController)
+        composable(AppRoutes.HOME) {
+
+            val homeViewModel: HomeViewModel = viewModel()
+            HomePage(navController, homeViewModel)
         }
 
 
@@ -162,3 +163,4 @@ fun AppNavHost(
 
     }
 }
+

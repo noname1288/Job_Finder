@@ -5,7 +5,7 @@ import com.example.jobfinder.domain.entity.Recruiter1
 
 fun Recruiter1.toRegisterUserRequest() : RegisterUserRequest{
     return RegisterUserRequest(
-        fullName = fulName,
+        fullName = this.fulName,
         email = email,
         password = password,
         role = role_recrutier
