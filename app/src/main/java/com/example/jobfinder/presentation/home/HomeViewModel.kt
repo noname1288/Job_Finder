@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.jobfinder.core.NetworkResult
+import com.example.jobfinder.data.local.UserSessionManager
 import com.example.jobfinder.data.remote.mapper.toJob
 import com.example.jobfinder.domain.entity.Job
+import com.example.jobfinder.domain.session.UserSession
 import com.example.jobfinder.presentation.BaseUIState
 import com.example.jobfinder.service_locator.AppContainer
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,8 +28,8 @@ class HomeViewModel : ViewModel(){
             _stateHome.value = _stateHome.value.copy(isLoading = true)
 
             //fetch data
-            val request_recruiter : Int = 3
-            val request_month : Int = 5
+            val request_recruiter : Int = UserSessionManager.getUserId()
+            val request_month : Int = 5 //todo handle: get month filter
 
             val result = AppContainer.jobRepository.getJobsInHomePage(request_recruiter, request_month)
 

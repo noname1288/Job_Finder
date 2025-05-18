@@ -95,9 +95,15 @@ fun HomePage(navController: NavController, homeViewModel: HomeViewModel) {
             PostListSection(stateHome.listJobs.size)
         }
 
-        // Hoặc nếu bạn muốn load dữ liệu động, dùng:
-        // items(listOfData) { post -> ... }
-        // Ở đây demo sẵn mockPosts
+        if (stateHome.listJobs.isEmpty()) {
+            item { Text("Không có bài đăng nào") }
+        }
+        else {
+            items(stateHome.listJobs) { job ->
+                LinerProgressPostItem(job, navController)
+            }
+        }
+
         items(stateHome.listJobs) { job ->
             LinerProgressPostItem(job, navController)
         }

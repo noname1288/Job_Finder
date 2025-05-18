@@ -18,4 +18,5 @@ interface JobAPI {
     @GET("/recruiter/home")
     suspend fun getJobsInHome(@Query("recruiterId") recruiterId:Int, @Query("month") month:Int ): Response<BaseResponse<GetJobsInHomePageResponse>>
 
+
 }
