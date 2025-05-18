@@ -8,6 +8,8 @@ import com.example.jobfinder.domain.repository.UserRepository
 import com.example.jobfinder.domain.usecase.CreateJobUseCase
 import com.example.jobfinder.domain.usecase.LoginUseCase
 import com.example.jobfinder.domain.usecase.RegisterUseCase
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -15,6 +17,21 @@ import com.example.jobfinder.domain.usecase.RegisterUseCase
  * Giữ SINGLETON cho toàn app.
  */
 object AppContainer {
+    /* ---------- function ---------- */
+//    Chuyển LocalDateTime → String
+    fun localDateTimeToString(dateTime: LocalDateTime?): String {
+        if (dateTime == null) return ""
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return dateTime.format(formatter)
+    }
+//    Chuyển String → LocalDateTime
+    fun stringToLocalDateTime(dateTimeString: String?): LocalDateTime? {
+        if(dateTimeString.isNullOrBlank()) return null
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        return LocalDateTime.parse(dateTimeString, formatter)
+    }
+
+
     /* ---------- Data layer ---------- */
     private val userApi = RetrofitHelper.userAPI          // Retrofit service
     private val postApi = RetrofitHelper.postAPI
@@ -23,7 +40,7 @@ object AppContainer {
         UserRepositoryImpl(userApi)
     }
 
-    private val jobRepository: JobRepository by lazy {
+    val jobRepository: JobRepository by lazy {
         JobRepositoryImpl(postApi)
     }
 

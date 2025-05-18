@@ -1,23 +1,38 @@
 package com.example.jobfinder.domain.entity
 
+import java.time.LocalDateTime
+
 data class Job(
-    val jobID: String,
-    var title: String, // tên công việc
-    var desciption: String, // mô tả
-    var requirement: String, // Yêu cầu
-    var benefit: String, //quyeefn lợi
-    var location: String,
-    var salary: String,
-    var shift: Shift, //ca làm việc
-    var createAt: String, //thời điểm tạo bài đăng
-    var endAt: String, //thời điểm kết thúc bài đăng tuyển
-    var duration: String, // thời gian để thực hiện công việc?
-    var recuiter: String, // ? liên kết với công ty tuyển dụng hay id nhà tuyển dụng đăng bài đó?
-    var quantity: Int, //số lượng tuyển
+    val id: Int,
+
+    val title: String,
+    val description: String,
+    val requirement: String,
+    val benefit: String,
+    val salary: String,
+    val location: String,
+
+    val numberOfPositions: Int,
+    val candidateCount:Int,
+
+    val createAt: LocalDateTime?,
+    val updateAt: LocalDateTime?,
+    val endAt: LocalDateTime?,
+
+    val shift: Shift,
+
+
+    val recruiter: String,
+    val status: String,
 )
 
 data class Shift(
-    val endTime: String,
+    val endTime: LocalDateTime?,
     val name: String,
-    val startTime: String
+    val startTime: LocalDateTime?
 )
+
+fun Job.calculatePregress() : Float{
+    if (numberOfPositions == 0) return 0f
+    return candidateCount.toFloat() / numberOfPositions.toFloat()
+}

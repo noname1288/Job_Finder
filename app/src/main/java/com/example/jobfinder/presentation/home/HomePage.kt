@@ -31,7 +31,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -49,12 +50,21 @@ import com.example.jobfinder.data.local.UserSessionManager
 import com.example.jobfinder.domain.entity.FakeData.mockPosts
 import com.example.jobfinder.domain.entity.PostModel
 import com.example.jobfinder.navigation.AppRoutes
-import com.example.jobfinder.presentation.AuthViewModel
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import com.example.jobfinder.domain.entity.Job
+import com.example.jobfinder.domain.entity.calculatePregress
+import com.example.jobfinder.service_locator.AppContainer
 
 
 @Composable
-fun HomePage(navController: NavController) {
+fun HomePage(navController: NavController, homeViewModel: HomeViewModel) {
     // Dùng LazyColumn nếu nội dung dài, cần scroll
+    val stateHome by homeViewModel.stateHome.collectAsState()
+
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -73,19 +83,23 @@ fun HomePage(navController: NavController) {
 
         /** TỔNG QUAN (ĐANG TUYỂN, ĐANG XỬ LÝ, ĐÃ HOÀN THÀNH) */
         item {
-            OverviewSection()
+            OverviewSection(
+                openCount = stateHome.openJob,
+                closeCount = stateHome.closeJob,
+                workingCount = stateHome.workingJob
+            )
         }
 
         /** DANH SÁCH BÀI ĐĂNG */
         item {
-            PostListSection()
+            PostListSection(stateHome.listJobs.size)
         }
 
         // Hoặc nếu bạn muốn load dữ liệu động, dùng:
         // items(listOfData) { post -> ... }
         // Ở đây demo sẵn mockPosts
-        items(mockPosts) { post ->
-            LinerProgressPostItem(post, navController)
+        items(stateHome.listJobs) { job ->
+            LinerProgressPostItem(job, navController)
         }
 
         // Thêm khoảng trống ở cuối
@@ -122,9 +136,9 @@ fun HomeHeader(navController: NavController) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
-                Text(UserSessionManager.getUserName(), style = MaterialTheme.typography.bodyMedium)
+                Text(UserSessionManager.getUserName().ifEmpty { "Not found User" }, style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    "Company: ${UserSessionManager.getEmail()}",
+                    "Company: ${UserSessionManager.getEmail().ifEmpty { "Not found infomation" }}",
                     style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
                 )
             }
@@ -199,7 +213,7 @@ fun GreetingCard() {
    OVERVIEW SECTION (Tổng quan 3 ô: Đang tuyển - Đang xử lý - Đã hoàn thành)
 ---------------------------------------------------------------- */
 @Composable
-fun OverviewSection() {
+fun OverviewSection(openCount: Int, closeCount: Int, workingCount: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,9 +237,9 @@ fun OverviewSection() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                OverviewItem(title = "Đang tuyển", number = 5, color = Color(0xFF906CF2))
-                OverviewItem(title = "Đang xử lý", number = 2, color = Color(0xFFF2994A))
-                OverviewItem(title = "Đã hoàn thành", number = 1, color = Color(0xFF27AE60))
+                OverviewItem(title = "Đang tuyển", number = openCount, color = Color(0xFF906CF2))
+                OverviewItem(title = "Đang xử lý", number = workingCount, color = Color(0xFFF2994A))
+                OverviewItem(title = "Đã hoàn thành", number = closeCount, color = Color(0xFF27AE60))
             }
         }
     }
@@ -257,14 +271,14 @@ fun OverviewItem(title: String, number: Int, color: Color) {
    POST LIST SECTION (Tiêu đề "Bài đăng (2)" + mô tả)
 ---------------------------------------------------------------- */
 @Composable
-fun PostListSection() {
+fun PostListSection(sizeOfListJob: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = "Bài đăng (2)",
+            text = "Bài đăng $sizeOfListJob",
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.SemiBold
             )
@@ -281,7 +295,7 @@ fun PostListSection() {
    POST ITEM (hiển thị mỗi bài đăng)
 ---------------------------------------------------------------- */
 @Composable
-fun LinerProgressPostItem(post: PostModel, navController: NavController) {
+fun LinerProgressPostItem(post: Job, navController: NavController) {
     val context = LocalContext.current
     val imageLoader = ImageLoader.Builder(context)
         .components {
@@ -324,10 +338,10 @@ fun LinerProgressPostItem(post: PostModel, navController: NavController) {
             }
             Spacer(Modifier.height(16.dp))
 
-            // Thanh progress (demo)
+//            // Thanh progress (demo)
             LinearProgressIndicator(
                 progress = {
-                    post.progress // 0f..1f
+                    post.calculatePregress() // 0f..1f
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -340,46 +354,27 @@ fun LinerProgressPostItem(post: PostModel, navController: NavController) {
             Spacer(Modifier.height(16.dp))
             // Thông tin: Địa điểm, số ứng viên, hạn
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(modifier = Modifier.weight(0.5f)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_warehouse_16), // vector drawable
-                            contentDescription = null,
-                            tint = Color(0xFFCBD2E1), // màu xám nhạt giống ảnh
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = post.location,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF1A1A1A) // gần với màu chữ trong ảnh
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_emoji_normal_16), // vector drawable
-                            contentDescription = null,
-                            tint = Color(0xFFCBD2E1), // màu xám nhạt giống ảnh
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = post.candidateCount.toString() + " Ứng viên",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF1A1A1A) // gần với màu chữ trong ảnh
-                        )
-                    }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_warehouse_16), // vector drawable
+                        contentDescription = null,
+                        tint = Color(0xFFCBD2E1), // màu xám nhạt giống ảnh
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = post.location,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF1A1A1A) // gần với màu chữ trong ảnh
+                        ,maxLines = 1
+                    )
                 }
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -390,8 +385,31 @@ fun LinerProgressPostItem(post: PostModel, navController: NavController) {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = post.deadline, style = MaterialTheme.typography.bodyMedium)
+                    Text(text = AppContainer.localDateTimeToString(post.endAt), style = MaterialTheme.typography.bodyMedium)
                 }
+
+
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_emoji_normal_16), // vector drawable
+                    contentDescription = null,
+                    tint = Color(0xFFCBD2E1), // màu xám nhạt giống ảnh
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = post.candidateCount.toString() + " Ứng viên",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF1A1A1A) // gần với màu chữ trong ảnh
+                    ,maxLines = 1
+
+                )
             }
 
 
