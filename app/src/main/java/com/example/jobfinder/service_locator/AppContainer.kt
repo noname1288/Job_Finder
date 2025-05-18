@@ -3,13 +3,17 @@ package com.example.jobfinder.service_locator
 import com.example.jobfinder.data.remote.RetrofitHelper
 import com.example.jobfinder.data.remote.repository.JobRepositoryImpl
 import com.example.jobfinder.data.remote.repository.UserRepositoryImpl
+import com.example.jobfinder.domain.entity.Shift
 import com.example.jobfinder.domain.repository.JobRepository
 import com.example.jobfinder.domain.repository.UserRepository
 import com.example.jobfinder.domain.usecase.CreateJobUseCase
+import com.example.jobfinder.domain.usecase.GetAllJobsByRecruiterIdUseCase
 import com.example.jobfinder.domain.usecase.LoginUseCase
 import com.example.jobfinder.domain.usecase.RegisterUseCase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 
 
 /**
@@ -17,21 +21,6 @@ import java.time.format.DateTimeFormatter
  * Giữ SINGLETON cho toàn app.
  */
 object AppContainer {
-    /* ---------- function ---------- */
-//    Chuyển LocalDateTime → String
-    fun localDateTimeToString(dateTime: LocalDateTime?): String {
-        if (dateTime == null) return ""
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        return dateTime.format(formatter)
-    }
-//    Chuyển String → LocalDateTime
-    fun stringToLocalDateTime(dateTimeString: String?): LocalDateTime? {
-        if(dateTimeString.isNullOrBlank()) return null
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-        return LocalDateTime.parse(dateTimeString, formatter)
-    }
-
-
     /* ---------- Data layer ---------- */
     private val userApi = RetrofitHelper.userAPI          // Retrofit service
     private val postApi = RetrofitHelper.postAPI
@@ -55,5 +44,8 @@ object AppContainer {
     }
     val createJobUseCase by lazy {
         CreateJobUseCase(jobRepository)
+    }
+    val getAllJobsUseCase by lazy {
+        GetAllJobsByRecruiterIdUseCase(jobRepository)
     }
 }

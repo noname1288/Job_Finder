@@ -6,6 +6,7 @@ import com.example.jobfinder.data.remote.api.JobAPI
 import com.example.jobfinder.data.remote.dto.BaseResponse
 import com.example.jobfinder.data.remote.dto.request.CreateJobRequest
 import com.example.jobfinder.data.remote.dto.response.GetJobsInHomePageResponse
+import com.example.jobfinder.data.remote.dto.response.JobTemp2
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.repository.JobRepository
 
@@ -28,6 +29,12 @@ class JobRepositoryImpl(private val jobApi: JobAPI) : JobRepository {
                     }
                 }
             }
+        }
+    }
+
+    override suspend fun getAllJobs(recruiterId: Int): NetworkResult<BaseResponse<List<JobTemp2>>> {
+        return safeApiCall {
+            jobApi.getAllJobs(recruiterId)
         }
     }
 }

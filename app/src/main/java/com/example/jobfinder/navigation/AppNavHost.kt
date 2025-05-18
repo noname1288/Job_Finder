@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.jobfinder.pages.jobdetail.JobDetailPage
 import com.example.jobfinder.presentation.AuthViewModel
+import com.example.jobfinder.presentation.BaseViewModelFactory
 import com.example.jobfinder.presentation.candidate.CandidateListPage
 import com.example.jobfinder.presentation.candidate.CandidateManagementPage
 import com.example.jobfinder.presentation.candidate.CandidateProfilePage
@@ -28,7 +29,9 @@ import com.example.jobfinder.presentation.profile.ProfilePage
 import com.example.jobfinder.presentation.profile.update.UpdateProfilePage
 import com.example.jobfinder.presentation.register.RegisterPage
 import com.example.jobfinder.presentation.workspace.WorkspacePage
+import com.example.jobfinder.presentation.workspace.WorkspaceViewModel
 import com.example.jobfinder.presentation.workspace.create.CreateJobPage
+import com.example.jobfinder.service_locator.AppContainer
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -88,7 +91,14 @@ fun AppNavHost(
          * */
         //Màn hình trang quản lý công việc
         composable(AppRoutes.WORK_SPACE) {
-            WorkspacePage(navController)
+            val workSpaceViewModelFactory = BaseViewModelFactory{
+                WorkspaceViewModel(
+                    AppContainer.getAllJobsUseCase
+                )
+            }
+
+            val workspaceViewModel : WorkspaceViewModel = viewModel (factory = workSpaceViewModelFactory)
+            WorkspacePage(navController, workspaceViewModel)
         }
         //Màn hình xem chi tiết 1 công việc
         composable(AppRoutes.JOB_DETAIL) {

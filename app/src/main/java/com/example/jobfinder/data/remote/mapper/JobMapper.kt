@@ -1,42 +1,63 @@
 package com.example.jobfinder.data.remote.mapper
 
 import com.example.jobfinder.data.remote.dto.response.JobTemp
+import com.example.jobfinder.data.remote.dto.response.JobTemp2
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.entity.Shift
-import com.example.jobfinder.service_locator.AppContainer
+import com.example.jobfinder.utils.Utils
 
 fun Job.toJobTemp(): JobTemp {
     return JobTemp(
         companyAddress = this.location,
-        createAt = AppContainer.localDateTimeToString(this.createAt),
-        endAt = AppContainer.localDateTimeToString(this.updateAt),
+        createAt = Utils.localDateTimeToString(this.createAt),
+        endAt = Utils.localDateTimeToString(this.updateAt),
         numberOfApplicants = this.candidateCount,
         numberOfRecruit = this.numberOfPositions,
         title = this.title,
-        updateAt = AppContainer.localDateTimeToString(this.endAt)
+        updateAt = Utils.localDateTimeToString(this.endAt)
     )
 }
 
-fun JobTemp.toJob() : Job{
+fun JobTemp.toJob(): Job {
     return Job(
         id = 0,
         title = this.title,
         description = "",
         requirement = "",
-        benefit ="",
+        benefit = "",
         salary = "",
         location = this.companyAddress,
         numberOfPositions = this.numberOfRecruit,
         candidateCount = this.numberOfApplicants,
-        createAt = AppContainer.stringToLocalDateTime(this.createAt),
-        updateAt =AppContainer.stringToLocalDateTime(this.updateAt),
-        endAt = AppContainer.stringToLocalDateTime(this.endAt),
+        createAt = Utils.stringToLocalDateTime(this.createAt),
+        updateAt = Utils.stringToLocalDateTime(this.updateAt),
+        endAt = Utils.stringToLocalDateTime(this.endAt),
         shift = Shift(
-            endTime = AppContainer.stringToLocalDateTime(""),
+            endTime = Utils.stringToLocalDateTime(""),
             name = "",
-            startTime =AppContainer.stringToLocalDateTime("")
+            startTime = Utils.stringToLocalDateTime("")
         ),
         recruiter = "",
-        status =""
+        status = "",
+    )
+}
+
+fun JobTemp2.toJob(): Job {
+    return Job(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        requirement = this.requirement,
+        benefit = this.benefit,
+        salary = this.salary,
+        location = this.location,
+        numberOfPositions = this.numberOfPositions,
+        candidateCount = -1,
+        createAt = Utils.stringToLocalDateTime(this.postDate),
+        updateAt = Utils.stringToLocalDateTime(this.updatedDate), //can be null
+        endAt = Utils.stringToLocalDateTime(this.deadLine),
+        shift = Utils.parseShift(this.shift),
+        recruiter = this.recruiter,
+        status = this.status
     )
 }

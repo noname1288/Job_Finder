@@ -56,7 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.entity.calculatePregress
-import com.example.jobfinder.service_locator.AppContainer
+import com.example.jobfinder.utils.Utils
 
 
 @Composable
@@ -374,6 +374,7 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
+                    //ĐỊA ĐIỂM
                     Text(
                         text = post.location,
                         style = MaterialTheme.typography.bodyMedium,
@@ -391,7 +392,8 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = AppContainer.localDateTimeToString(post.endAt), style = MaterialTheme.typography.bodyMedium)
+                    //HẠN ĐĂNG TUYỂN
+                    Text(text = "Hết hạn: ${ Utils.localDateTimeToString(post.endAt) }", style = MaterialTheme.typography.bodyMedium)
                 }
 
 

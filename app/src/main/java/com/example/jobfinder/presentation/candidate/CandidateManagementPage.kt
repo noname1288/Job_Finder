@@ -39,19 +39,9 @@ import com.example.jobfinder.navigation.AppRoutes
 
 @Composable
 fun CandidateManagementPage(navController: NavController) {
-//    Column(modifier = Modifier.fillMaxSize()) {
-//        BoxBackground("Công việc của bạn", "Hãy để chúng tôi trợ giúp", true, R.raw.vector_job)
-//
-//        Spacer(modifier = Modifier.height(12.dp))
-//
-//        CandidateTrackingSection(20,5)
-//
-//        Spacer(modifier = Modifier.height(12.dp))
-
-
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
-            BoxBackground("Công việc của bạn", "Hãy để chúng tôi trợ giúp", true, R.raw.vector_job)
+            BoxBackground("Quản lý ứng viên", "Hãy tìm ai đó phù hợp", true, R.raw.vector_job)
 
             Spacer(modifier = Modifier.height(12.dp))
 

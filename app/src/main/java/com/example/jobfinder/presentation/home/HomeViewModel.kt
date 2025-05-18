@@ -1,5 +1,6 @@
 package com.example.jobfinder.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -7,7 +8,6 @@ import com.example.jobfinder.core.NetworkResult
 import com.example.jobfinder.data.local.UserSessionManager
 import com.example.jobfinder.data.remote.mapper.toJob
 import com.example.jobfinder.domain.entity.Job
-import com.example.jobfinder.domain.session.UserSession
 import com.example.jobfinder.presentation.BaseUIState
 import com.example.jobfinder.service_locator.AppContainer
 import kotlinx.coroutines.flow.MutableStateFlow
