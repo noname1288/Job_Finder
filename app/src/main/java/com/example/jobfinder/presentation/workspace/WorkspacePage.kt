@@ -1,8 +1,6 @@
 package com.example.jobfinder.presentation.workspace
 
 import BoxBackground
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,9 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -37,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +40,7 @@ import androidx.navigation.NavController
 import com.example.jobfinder.R
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.navigation.AppRoutes
-import com.example.jobfinder.service_locator.AppContainer
+import com.example.jobfinder.navigation.navigateWithArgs
 import com.example.jobfinder.utils.Utils
 
 
@@ -67,11 +63,11 @@ fun WorkspacePage(navController: NavController, workspaceViewModel: WorkspaceVie
         BoxBackground("Quản lý công việc", "Đừng bỏ lỡ điều gì nhé", false, R.drawable.alarm_clock)
 
         LazyColumn {
-            if (stateWorkspace.allJobs.isEmpty()){
-                item{ Text(text = "Not found any jobs") }
-            }else {
-                items(stateWorkspace.allJobs) { job->
-                    JobCard(job,navController)
+            if (stateWorkspace.allJobs.isEmpty()) {
+                item { Text(text = "Not found any jobs") }
+            } else {
+                items(stateWorkspace.allJobs) { job ->
+                    JobCard(job, navController)
                 }
             }
 
@@ -80,12 +76,17 @@ fun WorkspacePage(navController: NavController, workspaceViewModel: WorkspaceVie
 }
 
 @Composable
-fun JobCard(job: Job,navController: NavController) {
+fun JobCard(job: Job, navController: NavController) {
     ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = showColorCard(job), // màu nền bạn muốn
+            contentColor = Color.Black           // màu chữ hoặc icon mặc định bên trong
+        ),
         modifier = Modifier
             .padding(12.dp)
             .clickable(onClick = {
-                navController.navigate(AppRoutes.JOB_DETAIL)
+                val jobIdString = job.id.toString()
+                navController.navigateWithArgs(AppRoutes.JOB_DETAIL, jobIdString)
             }),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
@@ -94,7 +95,24 @@ fun JobCard(job: Job,navController: NavController) {
             Spacer(modifier = Modifier.height(6.dp))
 
             //Job title
-            Text(text = job.title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = job.title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.width(230.dp),
+                    maxLines = 2
+                )
+                Text(
+                    text = showTextStatus(job.status),
+                    fontSize = 14.sp,
+                    fontStyle = FontStyle.Italic
+                )
+
+            }
 
 
             //date
@@ -116,7 +134,10 @@ fun JobCard(job: Job,navController: NavController) {
                             .width(120.dp)
                     ) {
                         Text("Bắt đầu", fontSize = 12.sp)
-                        Text("${job.shift.startTime!!.format(Utils.formatter_Hour_Minus)}", fontSize = 16.sp)
+                        Text(
+                            "${job.shift.startTime!!.format(Utils.formatter_Hour_Minus)}",
+                            fontSize = 16.sp
+                        )
                     }
                     //ca làm việc
                     Column(
@@ -125,7 +146,10 @@ fun JobCard(job: Job,navController: NavController) {
                             .width(120.dp)
                     ) {
                         Text("Kết ca", fontSize = 12.sp)
-                        Text("${job.shift.endTime!!.format(Utils.formatter_Hour_Minus)}", fontSize = 16.sp)
+                        Text(
+                            "${job.shift.endTime!!.format(Utils.formatter_Hour_Minus)}",
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }
@@ -183,10 +207,33 @@ fun JobCard(job: Job,navController: NavController) {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = "Kết thúc: ${Utils.localDateTimeToString(job.endAt)}", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = "Kết thúc: ${Utils.localDateTimeToString(job.endAt)}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
+    }
+}
+
+private fun showColorCard(job: Job): Color {
+    return when (job.status) {
+        "OPEN" -> Color(0xFFC2B2D0)
+        "WORKING" -> Color(0xFFF8D3CF)
+        "CLOSE" -> Color(0xFFE7E3E0)
+        "PENDING" -> Color(0xFFF6F6F3)
+        else -> Color(0xFF53535A)
+    }
+}
+
+private fun showTextStatus(jobStatus: String): String {
+    return when (jobStatus) {
+        "OPEN" -> "Đang tuyển"
+        "WORKING" -> "Đang làm"
+        "CLOSE" -> "Đã đóng"
+        "PENDING" -> "Chờ duyệt"
+        else -> "NOTHING"
     }
 }
 

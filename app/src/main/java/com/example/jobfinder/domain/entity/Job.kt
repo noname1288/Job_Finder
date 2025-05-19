@@ -15,9 +15,9 @@ data class Job(
     val numberOfPositions: Int=0,
     val candidateCount:Int=0,
 
-    var createAt: LocalDateTime? = LocalDateTime.now(),
-    var updateAt: LocalDateTime?=null,
-    var endAt: LocalDateTime?= LocalDateTime.now(),
+    var createAt: LocalDateTime? = LocalDateTime.now(), // bắt đắt tuyển
+    var updateAt: LocalDateTime?=null, // update thời gian ứng tuyển
+    var endAt: LocalDateTime?= LocalDateTime.now(), // hết hạn đăng tuyển
 
     val shift: Shift = Shift(),
 

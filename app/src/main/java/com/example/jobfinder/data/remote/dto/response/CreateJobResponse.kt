@@ -8,10 +8,11 @@ data class CreateJobResponse(
     val location: String,
     val numberOfPositions: Int,
     val postDate: String,
-    val recruiter: Any,
+    val recruiter: String,
     val requirement: String,
     val salary: String,
     val shift: String,
     val status: String,
-    val title: String
+    val title: String,
+    val updatedDate: String
 )

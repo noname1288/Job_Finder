@@ -14,8 +14,11 @@ import retrofit2.http.Query
 
 interface JobAPI {
     //create job
-    @POST("/jobs")
-    suspend fun createJob(@Body request: CreateJobRequest): Response<BaseResponse<CreateJobResponse>>
+    @POST("/recruiter/post-job")
+    suspend fun createJob(
+        @Query("recruiterId") recruiterId: Int,
+        @Body createJobRequest: CreateJobRequest
+    ): Response<BaseResponse<CreateJobResponse>>
 
     //get info in home page
     @GET("/recruiter/home")

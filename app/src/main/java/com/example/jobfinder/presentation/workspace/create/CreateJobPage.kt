@@ -43,6 +43,7 @@ import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -60,6 +62,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.jobfinder.data.local.UserSessionManager
+import com.example.jobfinder.navigation.safeNavigate
 import com.example.jobfinder.utils.Utils
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -72,6 +76,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobViewModel) {
+    val context = LocalContext.current
     val stateCreateJob by createJobViewModel.stateCreateJob.collectAsState()
 
     val scrollState = rememberScrollState()
@@ -91,6 +96,20 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = stateCreateJob.isSuccess, key2 = stateCreateJob.errorMessage) {
+        if (stateCreateJob.isSuccess) {
+            navController.popBackStack()
+
+            //reset state
+            createJobViewModel.onCreateEvent(CreateJobEvent.ResetState)
+        }
+
+        stateCreateJob.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -124,7 +143,8 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                     onDateSelected = { millis ->
                         millis?.let {
                             // 1. Format ngày cho giao diện người dùng
-                            val userDateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            val userDateFormatter =
+                                SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                             formattedDate_endAt = userDateFormatter.format(it)
 
                             // 2. Chuyển millis -> LocalDateTime, rồi set giờ = 23:59:59
@@ -135,14 +155,15 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                                 .atTime(23, 59, 59)
 
                             // 3. Format theo định dạng ISO 8601 cho server
-                            val serverDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                            val serverDateFormatter =
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
                             val formattedServerDate = serverDateFormatter.format(selectedDateTime)
 
                             // 4. Gửi event lên ViewModel
                             createJobViewModel.onCreateEvent(
-                                CreateJobEvent.EndTimeChanged(formattedServerDate)
+                                CreateJobEvent.EndAtChanged(formattedServerDate)
                             )
-                            Log.d("Create Job Page", "user_endAt: $formattedDate_endAt")
+                            Log.d("        ", "user_endAt: $formattedDate_endAt")
                             Log.d("Create Job Page", "server_endAt: $formattedServerDate")
                         }
                     },
@@ -155,7 +176,8 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                     onDateSelected = { millis ->
                         millis?.let {
                             // 1. Format ngày cho giao diện người dùng
-                            val userDateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            val userDateFormatter =
+                                SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                             formattedDate_workingAt = userDateFormatter.format(it)
 
                             // 2. Chuyển millis -> LocalDateTime, rồi set giờ = 23:59:59
@@ -166,7 +188,8 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                                 .atTime(23, 59, 59)
 
                             // 3. Format theo định dạng ISO 8601 cho server
-                            val serverDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                            val serverDateFormatter =
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
                             val formattedServerDate = serverDateFormatter.format(selectedDateTime)
 
                             // 4. Gửi event lên ViewModel
@@ -196,7 +219,8 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                         formattedDate_startTime = formatTime(hour, minute)
 
                         // 1. Tạo LocalDateTime = ngày + giờ chọn
-                        var selectedDate: LocalDate = Utils.stringToLocalDateTime(stateCreateJob.workingAt)!!.toLocalDate()
+                        var selectedDate: LocalDate =
+                            Utils.stringToLocalDateTime(stateCreateJob.workingAt)!!.toLocalDate()
 
                         val startDateTime = selectedDate.atTime(hour, minute, 0)
 
@@ -224,7 +248,8 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                         formattedDate_endTime = formatTime(hour, minute)
 
                         // 1. Tạo LocalDateTime = ngày + giờ chọn
-                        var selectedDate: LocalDate = Utils.stringToLocalDateTime(stateCreateJob.workingAt)!!.toLocalDate()
+                        var selectedDate: LocalDate =
+                            Utils.stringToLocalDateTime(stateCreateJob.workingAt)!!.toLocalDate()
 
                         val startDateTime = selectedDate.atTime(hour, minute, 0)
 
@@ -250,13 +275,21 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                     onDismissRequest = { showBottomSheet = false },
                     sheetState = bottomSheetState
                 ) {
-                    AddBottomSheetContent(onApply = {
-                        scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
-                            if (!bottomSheetState.isVisible) {
+                    AddBottomSheetContent(
+                        onCancel = {
+                            scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                                if (!bottomSheetState.isVisible) {
+                                    showBottomSheet = false
+                                }
+                            }
+                        },
+                        onApply = {
+                            scope.launch {
+                                createJobViewModel.onCreateEvent(CreateJobEvent.SendRequest)
+                                bottomSheetState.hide()
                                 showBottomSheet = false
                             }
-                        }
-                    })
+                        })
                 }
             }
 
@@ -270,7 +303,7 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                 ) {}
                 Spacer(Modifier.width(8.dp))
                 Column {
-                    Text("Minh Hoang Digi Company", fontWeight = FontWeight.Bold)
+                    Text(UserSessionManager.getUserName(), fontWeight = FontWeight.Bold)
                     Text("Đang tuyển dụng tại Hà Nội", fontSize = 12.sp, color = Color.Gray)
                 }
             }
@@ -350,15 +383,7 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
                 onPickerRequested = { showDatePicker_workingAt = true }
             )
 
-            /******
-             * TIME PICKER: DEADLINE
-             * ********/
-            DateField(
-                label = "Hạn đăng tuyển",
-                value = formattedDate_endAt,
-                onPickerRequested = { showDatePicker_endAt = true })
-
-            if(stateCreateJob.workingAt.isNotEmpty()){
+            if (stateCreateJob.workingAt.isNotEmpty()) {
                 /******
                  * TIME PICKER: START
                  * ********/
@@ -388,7 +413,8 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
 
 @Composable
 fun AddBottomSheetContent(
-    onApply: () -> Unit //chuyen doi state
+    onCancel: () -> Unit, //chuyen doi state
+    onApply: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -413,9 +439,7 @@ fun AddBottomSheetContent(
         )
         Spacer(Modifier.height(24.dp))
         Button(
-            onClick = {
-                //todo add new job
-            }, modifier = Modifier
+            onClick = onApply, modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .width(250.dp)
         ) {
@@ -423,7 +447,7 @@ fun AddBottomSheetContent(
         }
         Button(
             onClick =
-                onApply,
+                onCancel,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .width(250.dp)
@@ -557,8 +581,9 @@ fun DateField(label: String, value: String, onPickerRequested: () -> Unit) {
 //            interactionSource = interactionSource,
             enabled = false,
             trailingIcon = {
-                Icon(Icons.Default.CalendarToday, contentDescription = "DatePicker",
-                    modifier = Modifier.clickable{
+                Icon(
+                    Icons.Default.CalendarToday, contentDescription = "DatePicker",
+                    modifier = Modifier.clickable {
                         onPickerRequested()
                     })
             },

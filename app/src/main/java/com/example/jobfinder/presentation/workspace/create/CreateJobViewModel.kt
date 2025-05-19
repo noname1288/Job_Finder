@@ -1,16 +1,24 @@
 package com.example.jobfinder.presentation.workspace.create
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.jobfinder.core.NetworkResult
+import com.example.jobfinder.data.local.UserSessionManager
 import com.example.jobfinder.data.remote.dto.request.CreateJobRequest
+import com.example.jobfinder.data.remote.dto.request.ShiftDTO
 import com.example.jobfinder.domain.entity.Shift
+import com.example.jobfinder.domain.usecase.CreateJobUseCase
 import com.example.jobfinder.presentation.BaseUIState
+import com.example.jobfinder.utils.Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-class CreateJobViewModel : ViewModel(){
+class CreateJobViewModel(
+    private val createJobUseCase: CreateJobUseCase,
+) : ViewModel(){
     private val _stateCreateJob = MutableStateFlow(CreatJobUIState())
     val stateCreateJob: StateFlow<CreatJobUIState> = _stateCreateJob
 
@@ -55,6 +63,10 @@ class CreateJobViewModel : ViewModel(){
             CreateJobEvent.SendRequest -> {
                 createJob()
             }
+
+            CreateJobEvent.ResetState -> {
+                clearDataAndState()
+            }
         }
     }
 
@@ -62,23 +74,73 @@ class CreateJobViewModel : ViewModel(){
         viewModelScope.launch {
             _stateCreateJob.value = _stateCreateJob.value.copy(isLoading = true)
 
-            val request : CreateJobRequest = CreateJobRequest(
+            val request = CreateJobRequest(
                 title =_stateCreateJob.value.title,
                 description = _stateCreateJob.value.description,
                 requirement =_stateCreateJob.value.requirement,
                 salary = _stateCreateJob.value.salary,
                 benefit = _stateCreateJob.value.benefit,
                 location = _stateCreateJob.value.location,
-                numberOfPositions = _stateCreateJob.value.numberOfPositions,
-                deadLine = TODO(), //24/05/2025
-                shift = Shift(
-                    name = _stateCreateJob.value.nameShift,
-                    startTime =  TODO(),//09:00
-                    endTime =  TODO()//11:59
+                numberOfPositions = _stateCreateJob.value.numberOfPositions.toInt(),
+                deadLine = _stateCreateJob.value.endAt, // hạn đăng tuyển
+                shift = ShiftDTO(
+                    name = "null",
+                    startTime = _stateCreateJob.value.startTime,
+                    endTime = _stateCreateJob.value.endTime,
                 )
+
             )
 
+//            val request1 = CreateJobRequest(
+//                title ="T1",
+//                description = "des1",
+//                requirement = "req1",
+//                salary = "1",
+//                benefit = "1",
+//                location = "1",
+//                numberOfPositions = 4,
+//                deadLine = "2025-05-20T23:59:59",
+//                shift = ShiftDTO(
+//                    name = "nonn",
+//                    startTime = "2025-05-21T09:00:00",
+//                    endTime = "2025-05-21T18:00:00",
+//                )
+//            )
+
+            Log.d("CreateJobViewModel", request.toString())
+//            Log.d("CreateJobViewModel", request1.toString())
+
+
+            val response = createJobUseCase(
+                recruiterId = UserSessionManager.getUserId(),
+                createJobRequest = request
+            )
+
+
+            when(response){
+                is NetworkResult.Error ->{
+                    _stateCreateJob.value = _stateCreateJob.value.copy(
+                        errorMessage = response.message,
+                        isLoading = false
+                    )
+                }
+                is NetworkResult.Success->{
+                    _stateCreateJob.value = _stateCreateJob.value.copy(
+                        isSuccess = true,
+                        isLoading = false
+                    )
+                    Log.d("CreateJobViewModel", response.data.toString())
+
+                }
+            }
+
+
         }
+    }
+
+    fun clearDataAndState(){
+        _stateCreateJob.value = _stateCreateJob.value.copy(isSuccess = false, errorMessage = null, isLoading = false)
+        _stateCreateJob.value = CreatJobUIState()
     }
 }
 
@@ -90,7 +152,7 @@ data class CreatJobUIState(
     val salary:String = "",
     val location: String="",
 
-    val numberOfPositions: String="", //convert into Int before send to server
+    val numberOfPositions: String="1", //convert into Int before send to server
 
     val workingAt : String = "", // chọn ngày làm việc
     val endAt :String = "", //hạn đăng tuyển
@@ -119,5 +181,5 @@ sealed class CreateJobEvent{
 
 
     object SendRequest: CreateJobEvent()
-
+    object ResetState : CreateJobEvent()
 }
