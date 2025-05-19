@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jobfinder.data.local.UserSessionManager
-import com.example.jobfinder.navigation.safeNavigate
 import com.example.jobfinder.utils.Utils
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -378,7 +377,7 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
              * DATE PICKER: WORKING
              * ********/
             DateField(
-                label = "Ngày làm việc",
+                label = "Ngày bắt đầu làm việc",
                 value = formattedDate_workingAt,
                 onPickerRequested = { showDatePicker_workingAt = true }
             )

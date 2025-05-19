@@ -14,4 +14,8 @@ interface JobRepository {
 
     suspend fun getAllJobs(recruiterId: Int) : NetworkResult<BaseResponse<List<JobTemp2>>>
 
+    suspend fun getDetailJob(jobId: Int) : NetworkResult<BaseResponse<JobTemp2>>
+
+    suspend fun deleteJobById(jobId: Int) : NetworkResult<BaseResponse<Unit>>
+
 }

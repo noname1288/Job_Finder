@@ -140,7 +140,7 @@ class CreateJobViewModel(
 
     fun clearDataAndState(){
         _stateCreateJob.value = _stateCreateJob.value.copy(isSuccess = false, errorMessage = null, isLoading = false)
-        _stateCreateJob.value = CreatJobUIState()
+//        _stateCreateJob.value = CreatJobUIState()
     }
 }
 

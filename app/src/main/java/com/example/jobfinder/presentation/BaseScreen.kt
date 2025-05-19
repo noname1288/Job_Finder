@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -70,6 +71,7 @@ fun BaseScreen() {
     // Theo dõi route hiện tại
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val currentDestination = navBackStackEntry?.destination
     LaunchedEffect(currentRoute) {
         Log.d("NavigationRoute", "Current route: $currentRoute")
     }
@@ -89,7 +91,7 @@ fun BaseScreen() {
 
 
     // Ẩn bottom bar nếu route thuộc list dưới
-    val notShowBottomBarRoutes = listOf(
+    val notShowBottomBarRoutePrefixes = listOf(
         "chat_detail/{chatId}",
 
         // login
@@ -103,20 +105,29 @@ fun BaseScreen() {
 
         //
         AppRoutes.CREATE_JOB,
-        AppRoutes.JOB_DETAIL,
+        "job_detail",
         //
         AppRoutes.CANDIDATE_LIST,
         AppRoutes.CANDIDATE_DETAIL,
 
         //
         AppRoutes.MESSAGE,
+        "chat_detail/",
 
         //update profile pagfe
         AppRoutes.UPDATE_PROFILE
     )
 
-    val shouldShowBottomBar =
-        !notShowBottomBarRoutes.contains(currentRoute) // hien thi bottom app bar
+    val shouldShowBottomBar = remember(currentRoute) {
+        if (currentRoute == null) {
+            true
+        } else {
+            // Check if current route starts with any of the prefixes in the list
+            !notShowBottomBarRoutePrefixes.any { prefix ->
+                currentRoute.startsWith(prefix)
+            }
+        }
+    }
     val showFloatingButton = currentRoute == AppRoutes.WORK_SPACE
 
     // Định nghĩa các item bottom nav
@@ -131,6 +142,16 @@ fun BaseScreen() {
     // Tạo scaffold
     Scaffold(
         bottomBar = {
+//            NavigationBar {
+//                bottomBarItems.forEach { navItem ->
+//                    NavigationBarItem(
+//                        icon = {Icon(imageVector = navItem.icon, contentDescription = navItem.label)},
+//                        label = {Text(navItem.label)},
+//                        selected =  ,
+//                        onClick={}
+//                    )
+//                }
+//            }
             if (shouldShowBottomBar) {
                 NavigationBar {
                     bottomBarItems.forEach { navItem ->
@@ -142,18 +163,9 @@ fun BaseScreen() {
 //                        This handles cases where a child route should keep the parent tab selected.
 
                         NavigationBarItem(
-                            selected = selected,
+                            selected =selected,
+//                                currentDestination?.hierarchy?.any { it.route == navItem.route } == true,
                             onClick = {
-                                // Điều hướng sang route
-//                                navController.navigate(navItem.route) {
-//                                    // Xoá stack cũ, tuỳ logic
-//                                    popUpTo(navController.graph.startDestinationId) {
-//                                        saveState = true
-//                                    }
-//                                    launchSingleTop = true
-//                                    restoreState = true
-//                                }
-
                                 navController.navigate(navItem.route) {
                                     // Pop up to the start destination of the graph to
                                     // avoid building up a large stack of destinations
@@ -186,6 +198,7 @@ fun BaseScreen() {
                     }
                 }
             }
+
         },
         floatingActionButton = {
             if (showFloatingButton) {

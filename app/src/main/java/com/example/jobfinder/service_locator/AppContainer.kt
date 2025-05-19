@@ -3,17 +3,14 @@ package com.example.jobfinder.service_locator
 import com.example.jobfinder.data.remote.RetrofitHelper
 import com.example.jobfinder.data.remote.repository.JobRepositoryImpl
 import com.example.jobfinder.data.remote.repository.UserRepositoryImpl
-import com.example.jobfinder.domain.entity.Shift
 import com.example.jobfinder.domain.repository.JobRepository
 import com.example.jobfinder.domain.repository.UserRepository
 import com.example.jobfinder.domain.usecase.CreateJobUseCase
+import com.example.jobfinder.domain.usecase.DeleteJobByIdUseCase
 import com.example.jobfinder.domain.usecase.GetAllJobsByRecruiterIdUseCase
+import com.example.jobfinder.domain.usecase.GetDetailJobByIdUseCase
 import com.example.jobfinder.domain.usecase.LoginUseCase
 import com.example.jobfinder.domain.usecase.RegisterUseCase
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
-import java.time.temporal.ChronoField
 
 
 /**
@@ -47,5 +44,11 @@ object AppContainer {
     }
     val getAllJobsUseCase by lazy {
         GetAllJobsByRecruiterIdUseCase(jobRepository)
+    }
+    val getDetailJobByIdUseCase by lazy {
+        GetDetailJobByIdUseCase(jobRepository)
+    }
+    val deleteJobByIdUseCase by lazy {
+        DeleteJobByIdUseCase(jobRepository)
     }
 }

@@ -3,7 +3,6 @@ package com.example.jobfinder.navigation
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -33,6 +32,7 @@ import com.example.jobfinder.presentation.workspace.WorkspacePage
 import com.example.jobfinder.presentation.workspace.WorkspaceViewModel
 import com.example.jobfinder.presentation.workspace.create.CreateJobPage
 import com.example.jobfinder.presentation.workspace.create.CreateJobViewModel
+import com.example.jobfinder.presentation.workspace.detail.JobDetailViewModel
 import com.example.jobfinder.service_locator.AppContainer
 import kotlinx.coroutines.CoroutineScope
 
@@ -107,8 +107,17 @@ fun AppNavHost(
             route = "job_detail/{jobId}",
             arguments = listOf(navArgument ("jobId"){ type = NavType.StringType })
         ) {backStackEntry ->
+            val jobDetailViewModelFactory = BaseViewModelFactory{
+                JobDetailViewModel(
+                    AppContainer.getDetailJobByIdUseCase,
+                    AppContainer.deleteJobByIdUseCase
+                )
+            }
+
+            val jobDetailViewModel : JobDetailViewModel = viewModel(factory = jobDetailViewModelFactory)
+
             val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
-            JobDetailPage(navController, jobId)
+            JobDetailPage(navController, jobId, jobDetailViewModel)
         }
         //Màn hình tạo 1 công việc
         composable(AppRoutes.CREATE_JOB) {

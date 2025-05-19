@@ -309,7 +309,7 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = {
-                navController.navigate(AppRoutes.JOB_DETAIL)
+//                navController.navigate(AppRoutes.JOB_DETAIL)
             }),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

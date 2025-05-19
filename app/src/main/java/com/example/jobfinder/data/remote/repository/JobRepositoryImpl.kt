@@ -45,4 +45,16 @@ class JobRepositoryImpl(private val jobApi: JobAPI) : JobRepository {
             jobApi.getAllJobs(recruiterId)
         }
     }
+
+    override suspend fun getDetailJob(jobId: Int): NetworkResult<BaseResponse<JobTemp2>> {
+        return safeApiCall {
+            jobApi.getDetailJob(jobId)
+        }
+    }
+
+    override suspend fun deleteJobById(jobId: Int): NetworkResult<BaseResponse<Unit>> {
+        return safeApiCall {
+            jobApi.deleteJobById(jobId)
+        }
+    }
 }

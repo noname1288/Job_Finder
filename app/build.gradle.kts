@@ -31,16 +31,23 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
+    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
     buildFeatures {
         compose = true
     }
+
+
 }
 
 dependencies {
-
+    implementation("androidx.compose.material:material:1.8.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

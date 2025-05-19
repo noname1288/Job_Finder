@@ -7,6 +7,7 @@ import com.example.jobfinder.data.remote.dto.response.GetJobsInHomePageResponse
 import com.example.jobfinder.data.remote.dto.response.JobTemp2
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -27,6 +28,14 @@ interface JobAPI {
     //get all jobs : use in workspace page
     @GET("/recruiter/jobs/{recruiterId}")
     suspend fun getAllJobs(@Path("recruiterId") recruiterId:Int): Response<BaseResponse<List<JobTemp2>>>
+
+    //get detail job
+    @GET("/recruiter/job/{jobId}")
+    suspend fun getDetailJob(@Path("jobId") jobId:Int): Response<BaseResponse<JobTemp2>>
+
+    //delete job by Id
+    @DELETE("/recruiter/delete-job/{jobId}")
+    suspend fun deleteJobById(@Path("jobId") jobId:Int): Response<BaseResponse<Unit>>
 
 
 }

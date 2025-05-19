@@ -1,6 +1,7 @@
 package com.example.jobfinder.pages.jobdetail
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +58,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.jobfinder.domain.entity.Job
+import com.example.jobfinder.navigation.popBackIfCan
+import com.example.jobfinder.presentation.workspace.create.CreateJobEvent
+import com.example.jobfinder.presentation.workspace.detail.JobDetailEvent
+import com.example.jobfinder.presentation.workspace.detail.JobDetailViewModel
 import com.example.jobfinder.utils.StatusJob
 import kotlinx.coroutines.launch
 
@@ -68,9 +77,33 @@ enum class BottomSheetType {
 @Composable
 fun JobDetailPage(
     navController: NavController,
-    jobId: String
+    jobId: String,
+    jobDetailViewModel: JobDetailViewModel
 ) {
     Log.d("JobDetailPage", "jobId: $jobId")
+    val context = LocalContext.current
+
+    val stateJobDetail by jobDetailViewModel.stateJobDetail.collectAsState()
+
+    LaunchedEffect(jobId) {
+        //update ID
+        jobDetailViewModel.onEvent(JobDetailEvent.JobIdChanged(jobId))
+        // fetch data
+        jobDetailViewModel.onEvent(JobDetailEvent.GetJobDetailById)
+    }
+
+    LaunchedEffect(key1 = stateJobDetail.isDeleted) {
+        if (stateJobDetail.isDeleted) {
+            navController.popBackStack()
+            jobDetailViewModel.onEvent(JobDetailEvent.ResetState)
+        }
+    }
+
+    LaunchedEffect(stateJobDetail.errorMessage == null) {
+        stateJobDetail.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -153,66 +186,53 @@ fun JobDetailPage(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             // 1) Logo + Tiêu đề
-            HeaderSection()
+            HeaderSection(stateJobDetail.detailJob)
 
             Spacer(Modifier.height(8.dp))
 
             // 2) Dòng thông tin (lương, địa điểm, kinh nghiệm, thời gian đăng)
-            InfoRowSection()
+            InfoRowSection(stateJobDetail.detailJob)
 
             Spacer(Modifier.height(16.dp))
 
             // 3) Nội dung chi tiết
-            // Mô tả công việc
-            Text(
-                "Mô tả công việc",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                "• Làm gì đó thật hay ho, phối hợp team Infinity Publishing Global " +
-                        "để thiết kế giao diện IG post...\n" +
-                        "• Kiểm thử UI/UX, đảm bảo chất lượng sản phẩm với người dùng, ...",
-                style = MaterialTheme.typography.bodyMedium
-            )
 
+            // Mô tả công việc
+            CustomeTextHeading("Mô tả công việc")
+            Spacer(Modifier.height(6.dp))
+
+            CustomeTextDescription(stateJobDetail.detailJob.description)
             Spacer(Modifier.height(12.dp))
 
             // Yêu cầu
-            Text(
-                "Yêu cầu",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            CustomeTextHeading("Yêu cầu")
             Spacer(Modifier.height(6.dp))
-            Text(
-                "• Khả năng giao tiếp, làm việc nhóm tốt.\n" +
-                        "• Kỹ năng nghiên cứu, phân tích.\n" +
-                        "• Thành thạo Figma, Sketch, hoặc công cụ thiết kế tương đương.",
-                style = MaterialTheme.typography.bodyMedium
-            )
 
+            CustomeTextDescription(stateJobDetail.detailJob.requirement)
             Spacer(Modifier.height(12.dp))
 
             // Quyền lợi
-            Text(
-                "Quyền lợi",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+            CustomeTextHeading("Quyền lợi")
             Spacer(Modifier.height(6.dp))
-            Text(
-                "• Thu nhập từ 18-25 triệu tuỳ năng lực.\n" +
-                        "• Môi trường trẻ trung, công nghệ.\n" +
-                        "• Lộ trình thăng tiến rõ ràng.",
-                style = MaterialTheme.typography.bodyMedium
-            )
 
+            CustomeTextDescription(stateJobDetail.detailJob.benefit)
             Spacer(Modifier.height(12.dp))
 
-            // Địa điểm, Thông tin khác
-            LocationAndOtherSection()
+            //Số lượng tuyển
+            CustomeTextHeading("Số lượng tuyển")
+            Spacer(Modifier.height(6.dp))
+
+            CustomeTextDescription(stateJobDetail.detailJob.numberOfPositions.toString())
+            Spacer(Modifier.height(12.dp))
+
+            // ca làm
+            CustomeTextHeading("Ca làm")
+            Spacer(Modifier.height(6.dp))
+
+            CustomeTextDescription("Bắt đầu: " + stateJobDetail.detailJob.shift.startTime.toString())
+            Spacer(Modifier.height(12.dp))
+            CustomeTextDescription("Kết thúc: " + stateJobDetail.detailJob.shift.endTime.toString())
+            Spacer(Modifier.height(12.dp))
 
             //bottomSheet
             when (showBottomSheet) {
@@ -244,13 +264,25 @@ fun JobDetailPage(
                         sheetState = sheetState, onDismissRequest = { showBottomSheet = null }
                     ) {
                         DeleteBottomSheetContent(
-
+                            onCancel = {
+                                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                    if (!sheetState.isVisible) {
+                                        showBottomSheet = null
+                                    }
+                                }
+                            },
+                            onApply = {
+                                scope.launch {
+                                    jobDetailViewModel.onEvent(JobDetailEvent.DeleteJob)
+                                    sheetState.hide()
+                                    showBottomSheet = null
+                                }
+                            }
                         )
                     }
                 }
 
-                null -> {/*khong hien thi*/
-                }
+                null -> {/*khong hien thi*/ }
             }
 
         }
@@ -258,7 +290,27 @@ fun JobDetailPage(
 }
 
 @Composable
-fun DeleteBottomSheetContent() {
+fun CustomeTextHeading(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold
+    )
+}
+
+@Composable
+fun CustomeTextDescription(description: String) {
+    Text(
+        description,
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
+fun DeleteBottomSheetContent(
+    onCancel: ()-> Unit,
+    onApply: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -284,11 +336,11 @@ fun DeleteBottomSheetContent() {
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(64.dp))
-        Button(onClick = {}, modifier = Modifier.width(250.dp)) {
+        Button(onClick = onApply, modifier = Modifier.width(250.dp)) {
             Text("Có")
         }
         Spacer(Modifier.height(8.dp))
-        Button(onClick = {}, modifier = Modifier.width(250.dp)) {
+        Button(onClick = onCancel, modifier = Modifier.width(250.dp)) {
             Text("Không")
         }
 
@@ -374,7 +426,7 @@ fun StatusBottomSheetContent(
    1) HeaderSection - Logo + Tiêu đề công việc
 ---------------------------------------------------------------- */
 @Composable
-fun HeaderSection() {
+fun HeaderSection(job: Job) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(bottom = 8.dp)
@@ -395,10 +447,13 @@ fun HeaderSection() {
 
         Column {
             Text(
-                "UI/UX Designer",
+                job.title,
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
             )
-            Text("Google", style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray))
+            Text(
+                job.recruiter,
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
+            )
         }
     }
 }
@@ -407,23 +462,62 @@ fun HeaderSection() {
    2) InfoRowSection - dòng info (lương, địa điểm, kinh nghiệm, thời gian đăng)
 ---------------------------------------------------------------- */
 @Composable
-fun InfoRowSection() {
+fun InfoRowSection(job: Job) {
     // Thông tin bạn đưa vào (18-25 triệu, California, Hà Nội, 3 năm, 1 day ago)
     // Tuỳ chỉnh format...
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
     ) {
-        Column {
-            Text("18–25 triệu", style = MaterialTheme.typography.bodyLarge)
-            Text("California", style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray))
+        Column(
+            modifier = Modifier
+                .weight(1f) // Chiếm phần không gian bằng nhau
+                .padding(8.dp)
+        ) {
+            Text(
+                "Lương",
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                job.salary,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
+            )
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Hà Nội", style = MaterialTheme.typography.bodyLarge)
-            Text("3 năm", style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray))
+        Column(
+            modifier = Modifier
+                .weight(1f) // Chiếm phần không gian bằng nhau
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Vị trí",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                job.location,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
+            )
         }
-        Column(horizontalAlignment = Alignment.End) {
-            Text("1 day ago", style = MaterialTheme.typography.bodyLarge)
+        Column(
+            modifier = Modifier
+                .weight(1f) // Chiếm phần không gian bằng nhau
+                .padding(8.dp) // Tùy chọn thêm khoảng cách trong các cột
+            , horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                "1 day ago",
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
@@ -432,7 +526,7 @@ fun InfoRowSection() {
    3) LocationAndOtherSection - phần “Địa điểm”, thời gian làm việc, lương, v.v.
 ---------------------------------------------------------------- */
 @Composable
-fun LocationAndOtherSection() {
+fun LocationAndOtherSection(job: Job) {
     Text("Địa điểm", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
     Spacer(Modifier.height(6.dp))
 
