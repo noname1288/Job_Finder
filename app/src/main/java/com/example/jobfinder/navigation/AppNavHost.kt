@@ -31,6 +31,7 @@ import com.example.jobfinder.presentation.register.RegisterPage
 import com.example.jobfinder.presentation.workspace.WorkspacePage
 import com.example.jobfinder.presentation.workspace.WorkspaceViewModel
 import com.example.jobfinder.presentation.workspace.create.CreateJobPage
+import com.example.jobfinder.presentation.workspace.create.CreateJobViewModel
 import com.example.jobfinder.service_locator.AppContainer
 import kotlinx.coroutines.CoroutineScope
 
@@ -106,8 +107,9 @@ fun AppNavHost(
         }
         //Màn hình tạo 1 công việc
         composable(AppRoutes.CREATE_JOB) {
-            // Màn hình tạo job
-            CreateJobPage(navController)
+
+            val createJobViewModel : CreateJobViewModel = viewModel()
+            CreateJobPage(navController, createJobViewModel)
         }
 
 

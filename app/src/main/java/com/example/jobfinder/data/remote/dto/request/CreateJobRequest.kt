@@ -9,7 +9,7 @@ data class CreateJobRequest(
     val salary: String,
     val benefit: String,
     val location: String,
-    val numberOfPositions: Int,
+    val numberOfPositions: String,
     val deadLine: String,
     val shift: Shift,
 )

@@ -42,6 +42,8 @@ class WorkspaceViewModel(private val getAllJobsUseCase: GetAllJobsByRecruiterIdU
         }
     }
 
+    //todo: Maybe need to reset homeState
+
 }
 
 data class WorkSpaceState(

@@ -47,11 +47,10 @@ class HomeViewModel : ViewModel(){
                     )
                 }
             }
-
-
-
         }
     }
+
+    //todo: Maybe need to reset homeState
 
 
 }
