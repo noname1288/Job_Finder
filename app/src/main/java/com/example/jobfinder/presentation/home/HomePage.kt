@@ -104,10 +104,6 @@ fun HomePage(navController: NavController, homeViewModel: HomeViewModel) {
             }
         }
 
-        items(stateHome.listJobs) { job ->
-            LinerProgressPostItem(job, navController)
-        }
-
         // Thêm khoảng trống ở cuối
         item {
             Spacer(Modifier.height(16.dp))
