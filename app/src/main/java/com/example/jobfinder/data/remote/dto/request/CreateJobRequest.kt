@@ -11,5 +11,11 @@ data class CreateJobRequest(
     val location: String,
     val numberOfPositions: Int,
     val deadLine: String,
-    val shift: Shift,
+    val shift: ShiftDTO,
+)
+
+data class ShiftDTO(
+    val endTime: String,
+    val name: String,
+    val startTime: String
 )

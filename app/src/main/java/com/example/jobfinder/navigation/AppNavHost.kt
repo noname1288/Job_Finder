@@ -3,6 +3,7 @@ package com.example.jobfinder.navigation
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -11,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.jobfinder.pages.jobdetail.JobDetailPage
 import com.example.jobfinder.presentation.AuthViewModel
+import com.example.jobfinder.presentation.BaseViewModelFactory
 import com.example.jobfinder.presentation.candidate.CandidateListPage
 import com.example.jobfinder.presentation.candidate.CandidateManagementPage
 import com.example.jobfinder.presentation.candidate.CandidateProfilePage
@@ -28,7 +30,10 @@ import com.example.jobfinder.presentation.profile.ProfilePage
 import com.example.jobfinder.presentation.profile.update.UpdateProfilePage
 import com.example.jobfinder.presentation.register.RegisterPage
 import com.example.jobfinder.presentation.workspace.WorkspacePage
+import com.example.jobfinder.presentation.workspace.WorkspaceViewModel
 import com.example.jobfinder.presentation.workspace.create.CreateJobPage
+import com.example.jobfinder.presentation.workspace.create.CreateJobViewModel
+import com.example.jobfinder.service_locator.AppContainer
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -88,16 +93,33 @@ fun AppNavHost(
          * */
         //Màn hình trang quản lý công việc
         composable(AppRoutes.WORK_SPACE) {
-            WorkspacePage(navController)
+            val workSpaceViewModelFactory = BaseViewModelFactory{
+                WorkspaceViewModel(
+                    AppContainer.getAllJobsUseCase
+                )
+            }
+
+            val workspaceViewModel : WorkspaceViewModel = viewModel (factory = workSpaceViewModelFactory)
+            WorkspacePage(navController, workspaceViewModel)
         }
         //Màn hình xem chi tiết 1 công việc
-        composable(AppRoutes.JOB_DETAIL) {
-            JobDetailPage(navController)
+        composable(
+            route = "job_detail/{jobId}",
+            arguments = listOf(navArgument ("jobId"){ type = NavType.StringType })
+        ) {backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            JobDetailPage(navController, jobId)
         }
         //Màn hình tạo 1 công việc
         composable(AppRoutes.CREATE_JOB) {
-            // Màn hình tạo job
-            CreateJobPage(navController)
+            val createJobViewModelFactory = BaseViewModelFactory{
+                CreateJobViewModel(
+                    createJobUseCase = AppContainer.createJobUseCase
+                )
+            }
+
+            val createJobViewModel : CreateJobViewModel = viewModel(factory = createJobViewModelFactory)
+            CreateJobPage(navController, createJobViewModel)
         }
 
 

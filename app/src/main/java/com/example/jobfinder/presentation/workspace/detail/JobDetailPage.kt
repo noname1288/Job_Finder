@@ -1,5 +1,6 @@
 package com.example.jobfinder.pages.jobdetail
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,8 +67,11 @@ enum class BottomSheetType {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JobDetailPage(
-    navController: NavController
+    navController: NavController,
+    jobId: String
 ) {
+    Log.d("JobDetailPage", "jobId: $jobId")
+
     var expanded by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState() // quan ly state cua bottomsheet

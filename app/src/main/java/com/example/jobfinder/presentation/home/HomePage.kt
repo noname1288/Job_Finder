@@ -56,7 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.entity.calculatePregress
-import com.example.jobfinder.service_locator.AppContainer
+import com.example.jobfinder.utils.Utils
 
 
 @Composable
@@ -95,11 +95,13 @@ fun HomePage(navController: NavController, homeViewModel: HomeViewModel) {
             PostListSection(stateHome.listJobs.size)
         }
 
-        // Hoặc nếu bạn muốn load dữ liệu động, dùng:
-        // items(listOfData) { post -> ... }
-        // Ở đây demo sẵn mockPosts
-        items(stateHome.listJobs) { job ->
-            LinerProgressPostItem(job, navController)
+        if (stateHome.listJobs.isEmpty()) {
+            item { Text("Không có bài đăng nào") }
+        }
+        else {
+            items(stateHome.listJobs) { job ->
+                LinerProgressPostItem(job, navController)
+            }
         }
 
         // Thêm khoảng trống ở cuối
@@ -368,6 +370,7 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
+                    //ĐỊA ĐIỂM
                     Text(
                         text = post.location,
                         style = MaterialTheme.typography.bodyMedium,
@@ -385,7 +388,8 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = AppContainer.localDateTimeToString(post.endAt), style = MaterialTheme.typography.bodyMedium)
+                    //HẠN ĐĂNG TUYỂN
+                    Text(text = "Hết hạn: ${ Utils.localDateTimeToString(post.endAt) }", style = MaterialTheme.typography.bodyMedium)
                 }
 
 

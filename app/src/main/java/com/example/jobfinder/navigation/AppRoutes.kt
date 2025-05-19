@@ -20,7 +20,7 @@ object AppRoutes {
 
     //Third Graph
     const val DETAIL_GRAPH = "detail_graph"
-    const val JOB_DETAIL = "job_detail"
+    const val JOB_DETAIL = "job_detail/%s"
     const val CREATE_JOB = "create_job"
 
 

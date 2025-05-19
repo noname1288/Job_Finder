@@ -12,17 +12,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,40 +30,63 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.jobfinder.R
+import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.navigation.navigateWithArgs
+import com.example.jobfinder.utils.Utils
 
 
 @Composable
-fun WorkspacePage(navController: NavController) {
+fun WorkspacePage(navController: NavController, workspaceViewModel: WorkspaceViewModel) {
+    val context = LocalContext.current
+
+    val stateWorkspace by workspaceViewModel.stateWorkspace.collectAsState()
+    var isShowLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        workspaceViewModel.getAllJobs()
+    }
+
     Column(
         modifier = Modifier
 //            .padding(innerPadding)
             .fillMaxSize()
     ) {
-        BoxBackground("Quản lý thời gian", "Đừng bỏ lỡ điều gì nhé", false, R.drawable.alarm_clock)
+        BoxBackground("Quản lý công việc", "Đừng bỏ lỡ điều gì nhé", false, R.drawable.alarm_clock)
 
-        Column(Modifier.verticalScroll(rememberScrollState())) {
-            for (i in 1..5) {
-                JobCard(navController)
+        LazyColumn {
+            if (stateWorkspace.allJobs.isEmpty()) {
+                item { Text(text = "Not found any jobs") }
+            } else {
+                items(stateWorkspace.allJobs) { job ->
+                    JobCard(job, navController)
+                }
             }
+
         }
     }
 }
 
 @Composable
-fun JobCard(navController: NavController) {
+fun JobCard(job: Job, navController: NavController) {
     ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = showColorCard(job), // màu nền bạn muốn
+            contentColor = Color.Black           // màu chữ hoặc icon mặc định bên trong
+        ),
         modifier = Modifier
             .padding(12.dp)
             .clickable(onClick = {
-                navController.navigate(AppRoutes.JOB_DETAIL)
+                val jobIdString = job.id.toString()
+                navController.navigateWithArgs(AppRoutes.JOB_DETAIL, jobIdString)
             }),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
@@ -72,7 +95,24 @@ fun JobCard(navController: NavController) {
             Spacer(modifier = Modifier.height(6.dp))
 
             //Job title
-            Text(text = "Tuyển nhân viên bán hàng", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = job.title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.width(230.dp),
+                    maxLines = 2
+                )
+                Text(
+                    text = showTextStatus(job.status),
+                    fontSize = 14.sp,
+                    fontStyle = FontStyle.Italic
+                )
+
+            }
 
 
             //date
@@ -85,21 +125,31 @@ fun JobCard(navController: NavController) {
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    //thời gian thực thi công việc
                     Column(
                         modifier = Modifier
                             .padding(8.dp)
+                            .width(120.dp)
                     ) {
-                        Text("Tong thoi gian", fontSize = 12.sp)
-                        Text("08:00:00 hrs", fontSize = 16.sp)
+                        Text("Bắt đầu", fontSize = 12.sp)
+                        Text(
+                            "${job.shift.startTime!!.format(Utils.formatter_Hour_Minus)}",
+                            fontSize = 16.sp
+                        )
                     }
+                    //ca làm việc
                     Column(
                         modifier = Modifier
                             .padding(8.dp)
+                            .width(120.dp)
                     ) {
-                        Text("Bat dau - Ket thuc", fontSize = 12.sp)
-                        Text("09:00 AM - 05:00 PM ", fontSize = 16.sp)
+                        Text("Kết ca", fontSize = 12.sp)
+                        Text(
+                            "${job.shift.endTime!!.format(Utils.formatter_Hour_Minus)}",
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }
@@ -120,7 +170,7 @@ fun JobCard(navController: NavController) {
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "post.location",
+                            text = job.location,
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF1A1A1A) // gần với màu chữ trong ảnh
                         )
@@ -137,14 +187,16 @@ fun JobCard(navController: NavController) {
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
+                        //số lượng người làm
                         Text(
-                            text = "So luong: __",
+                            text = job.numberOfPositions.toString(),
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF1A1A1A) // gần với màu chữ trong ảnh
                         )
                     }
                 }
 
+                //Thời gian kết thúc công việc đó
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -155,10 +207,33 @@ fun JobCard(navController: NavController) {
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = "Het han: __", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = "Kết thúc: ${Utils.localDateTimeToString(job.endAt)}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
+    }
+}
+
+private fun showColorCard(job: Job): Color {
+    return when (job.status) {
+        "OPEN" -> Color(0xFFC2B2D0)
+        "WORKING" -> Color(0xFFF8D3CF)
+        "CLOSE" -> Color(0xFFE7E3E0)
+        "PENDING" -> Color(0xFFF6F6F3)
+        else -> Color(0xFF53535A)
+    }
+}
+
+private fun showTextStatus(jobStatus: String): String {
+    return when (jobStatus) {
+        "OPEN" -> "Đang tuyển"
+        "WORKING" -> "Đang làm"
+        "CLOSE" -> "Đã đóng"
+        "PENDING" -> "Chờ duyệt"
+        else -> "NOTHING"
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.jobfinder.presentation
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -69,9 +70,9 @@ fun BaseScreen() {
     // Theo dõi route hiện tại
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-//    LaunchedEffect(currentRoute) {
-//        Log.d("Navigation", "Current route: $currentRoute")
-//    }
+    LaunchedEffect(currentRoute) {
+        Log.d("NavigationRoute", "Current route: $currentRoute")
+    }
 
     //create a snackbarhoststate to be shared across all screens
     val snackbarHostState = remember{ SnackbarHostState() }

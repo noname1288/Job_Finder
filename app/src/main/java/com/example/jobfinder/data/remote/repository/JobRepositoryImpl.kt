@@ -5,14 +5,23 @@ import com.example.jobfinder.core.safeApiCall
 import com.example.jobfinder.data.remote.api.JobAPI
 import com.example.jobfinder.data.remote.dto.BaseResponse
 import com.example.jobfinder.data.remote.dto.request.CreateJobRequest
+import com.example.jobfinder.data.remote.dto.response.CreateJobResponse
 import com.example.jobfinder.data.remote.dto.response.GetJobsInHomePageResponse
+import com.example.jobfinder.data.remote.dto.response.JobTemp2
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.repository.JobRepository
 
 class JobRepositoryImpl(private val jobApi: JobAPI) : JobRepository {
-    override suspend fun createJob(job: CreateJobRequest): NetworkResult<BaseResponse<Job>> {
-        TODO("Not yet implemented")
+
+    override suspend fun createJob(
+        recruiterId: Int,
+        createJobRequest: CreateJobRequest
+    ): NetworkResult<BaseResponse<CreateJobResponse>> {
+        return safeApiCall {
+            jobApi.createJob(recruiterId, createJobRequest)
+        }
     }
+
 
     override suspend fun getJobsInHomePage(recruiterId: Int, month: Int): NetworkResult<GetJobsInHomePageResponse> {
         safeApiCall {
@@ -28,6 +37,12 @@ class JobRepositoryImpl(private val jobApi: JobAPI) : JobRepository {
                     }
                 }
             }
+        }
+    }
+
+    override suspend fun getAllJobs(recruiterId: Int): NetworkResult<BaseResponse<List<JobTemp2>>> {
+        return safeApiCall {
+            jobApi.getAllJobs(recruiterId)
         }
     }
 }
