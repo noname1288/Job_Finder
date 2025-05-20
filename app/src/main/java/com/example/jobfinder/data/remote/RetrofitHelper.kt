@@ -25,4 +25,5 @@ object RetrofitHelper {
 
     //candidate management api: application, approve/reject - candidate
     val candidateAPI : CandidateAPI by lazy { retrofit.create(CandidateAPI::class.java) }
+
 }

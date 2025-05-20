@@ -14,7 +14,8 @@ import com.example.jobfinder.presentation.AuthViewModel
 import com.example.jobfinder.presentation.BaseViewModelFactory
 import com.example.jobfinder.presentation.candidate.list.CandidateListPage
 import com.example.jobfinder.presentation.candidate.CandidateManagementPage
-import com.example.jobfinder.presentation.candidate.CandidateProfilePage
+import com.example.jobfinder.presentation.candidate.CandidateManagementViewModel
+import com.example.jobfinder.presentation.candidate.detail.CandidateProfilePage
 import com.example.jobfinder.presentation.candidate.list.CandidateListViewModel
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage1
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage2
@@ -137,7 +138,15 @@ fun AppNavHost(
         * CÁC MÀN QUẢN LÝ ỨNG VIÊN: DANH SÁCH, CHI TIẾT, PHÊ DUYỆT/TỪ CHỐI ỨNG VIÊN
          * */
         composable(AppRoutes.CANDIDATE_MANAGEMENT) {
-            CandidateManagementPage(navController)
+            val candidateManagementViewModelFactory = BaseViewModelFactory{
+                CandidateManagementViewModel(
+                    AppContainer.candidateRepository
+                )
+            }
+
+            val viewModel: CandidateManagementViewModel = viewModel(factory = candidateManagementViewModelFactory)
+
+            CandidateManagementPage(navController, viewModel)
         }
         composable(
             route = "candidate_list/{jobId}",

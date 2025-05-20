@@ -1,4 +1,4 @@
-package com.example.jobfinder.presentation.candidate
+package com.example.jobfinder.presentation.candidate.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

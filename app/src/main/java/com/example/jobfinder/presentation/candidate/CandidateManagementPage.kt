@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,26 +39,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jobfinder.R
-import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.utils.Utils
 
 @Composable
-fun CandidateManagementPage(navController: NavController) {
+fun CandidateManagementPage(navController: NavController, viewModel: CandidateManagementViewModel) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(CandidateManagementEvent.Refresh)
+    }
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             BoxBackground("Quản lý ứng viên", "Hãy tìm ai đó phù hợp", true, R.raw.vector_job)
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            CandidateTrackingSection(20, 5)
+            CandidateTrackingSection(state.candidateNumber, state.jobNumber)
 
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        item {
-            CandidateItem("03 tháng 2 năm 2025", "E-Learning", "3/5", navController)
-            CandidateItem("01 tháng 2 năm 2025", "E-Learning1", "5/5", navController)
-            CandidateItem("15 tháng 2 năm 2025", "E-Learning2", "7/5", navController)
+        if (state.jobs.isNotEmpty()) {
+            items(state.jobs) { job ->
+                CandidateItem(
+                    date = "Kết thúc: ${Utils.localDateTimeToString(Utils.stringToLocalDateTime(job.endAt))}",
+                    title = job.title,
+                    numberOfRecruit = job.numberOfRecruit,
+                    numberOfApplicants = job.numberOfApplicants,
+                    navController = navController
+                )
+
+            }
+        } else {
+            item {
+                Text(text = "Không có công việc nào", modifier = Modifier.padding(16.dp))
+            }
         }
+
         item {
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -68,7 +90,8 @@ fun CandidateManagementPage(navController: NavController) {
 fun CandidateItem(
     date: String,
     title: String,
-    progress: String,
+    numberOfApplicants: Int,
+    numberOfRecruit: Int,
     navController: NavController
 ) {
     Card(
@@ -76,7 +99,8 @@ fun CandidateItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable {
-                navController.navigate(AppRoutes.CANDIDATE_LIST)
+                //todo : go to CandidateListPage
+//                navController.navigate(AppRoutes.CANDIDATE_LIST)
             },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -131,16 +155,22 @@ fun CandidateItem(
                         color = Color.Gray
                     )
                     Text(
-                        text = progress,
+                        text = "$numberOfApplicants/$numberOfRecruit",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = if (progress == "7/5") Color.Red else Color(0xFF2EBD85)
+                        color = calculateProgressColor(numberOfApplicants, numberOfRecruit)
                     )
                 }
             }
         }
     }
 }
+
+private fun calculateProgressColor(numberOfApplicants: Int, numberOfRecruit: Int): Color {
+    val res = numberOfApplicants.toFloat() / numberOfRecruit.toFloat()
+    return if (res < 1.0) Color(0xFF2EBD85) else Color.Red
+}
+
 
 @Composable
 fun CandidateTrackingSection(
