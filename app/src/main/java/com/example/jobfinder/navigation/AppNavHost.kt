@@ -12,9 +12,10 @@ import androidx.navigation.navArgument
 import com.example.jobfinder.pages.jobdetail.JobDetailPage
 import com.example.jobfinder.presentation.AuthViewModel
 import com.example.jobfinder.presentation.BaseViewModelFactory
-import com.example.jobfinder.presentation.candidate.CandidateListPage
+import com.example.jobfinder.presentation.candidate.list.CandidateListPage
 import com.example.jobfinder.presentation.candidate.CandidateManagementPage
 import com.example.jobfinder.presentation.candidate.CandidateProfilePage
+import com.example.jobfinder.presentation.candidate.list.CandidateListViewModel
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage1
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage2
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage3
@@ -138,8 +139,20 @@ fun AppNavHost(
         composable(AppRoutes.CANDIDATE_MANAGEMENT) {
             CandidateManagementPage(navController)
         }
-        composable(AppRoutes.CANDIDATE_LIST) {
-            CandidateListPage(navController)
+        composable(
+            route = "candidate_list/{jobId}",
+            arguments = listOf(navArgument ("jobId"){ type = NavType.StringType })
+        ) {backStackEntry ->
+            val candidateListViewModelFactory = BaseViewModelFactory{
+                CandidateListViewModel(
+                    AppContainer.getCandidatesByJobIdUseCase
+                )
+            }
+
+            val candidateListViewModel : CandidateListViewModel = viewModel(factory = candidateListViewModelFactory)
+
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: ""
+            CandidateListPage(navController,candidateListViewModel, jobId)
         }
         composable(AppRoutes.CANDIDATE_DETAIL) {
             CandidateProfilePage(navController)

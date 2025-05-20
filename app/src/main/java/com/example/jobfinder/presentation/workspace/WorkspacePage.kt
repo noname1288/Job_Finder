@@ -86,7 +86,12 @@ fun JobCard(job: Job, navController: NavController) {
             .padding(12.dp)
             .clickable(onClick = {
                 val jobIdString = job.id.toString()
-                navController.navigateWithArgs(AppRoutes.JOB_DETAIL, jobIdString)
+                navController.navigateWithArgs(
+                    route = AppRoutes.JOB_DETAIL,
+                    args = arrayOf(jobIdString),
+                    popUpToRoute = AppRoutes.WORK_SPACE,
+                    isInclusive = false,
+                    restore = false)
             }),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {

@@ -28,7 +28,7 @@ object AppRoutes {
 
     const val UPDATE_PROFILE = "update_profile"
 
-    const val CANDIDATE_LIST = "candidate_list"
+    const val CANDIDATE_LIST = "candidate_list/%s"
     const val CANDIDATE_DETAIL = "candidate_detail"
 
     // ...existing routes...

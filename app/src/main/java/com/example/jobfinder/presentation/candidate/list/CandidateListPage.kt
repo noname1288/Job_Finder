@@ -1,5 +1,6 @@
-package com.example.jobfinder.presentation.candidate
+package com.example.jobfinder.presentation.candidate.list
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Warning
@@ -36,6 +36,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,9 +52,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.jobfinder.R
+import com.example.jobfinder.data.remote.dto.response.ApplicationResponse
 import com.example.jobfinder.domain.entity.Candidate
 import com.example.jobfinder.domain.entity.sampleCandidates
 import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.navigation.popBackIfCan
 import com.example.jobfinder.navigation.safeNavigate
 
 enum class StatusDialog {
@@ -64,17 +69,63 @@ enum class StatusDialog {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CandidateListPage(
-    navController: NavController
+    navController: NavController,
+    candidateListViewModel: CandidateListViewModel,
+    jobId : String
 ) {
+    val state by candidateListViewModel.state.collectAsState()
+    Log.d("CandidateListPage", "JobId: $jobId")
+
+    LaunchedEffect(jobId) {
+        //update ID
+        candidateListViewModel.onEvent(CandidateListEvent.JobIdChanged(jobId))
+        // fetch data
+        candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
+    }
+
     var candidates = sampleCandidates
-    var showDialog by remember { mutableStateOf<StatusDialog>(StatusDialog.NONE) }
+    var showDialogState by remember { mutableStateOf<Pair<StatusDialog, ApplicationResponse?>>(StatusDialog.NONE to null) }
+
+    // Extract dialog rendering logic outside of LazyColumn
+    val (dialogType, selectedApplication) = showDialogState
+
+    // Dialog rendering moved outside of LazyColumn
+    when (dialogType) {
+        StatusDialog.ACCEPT -> {
+            AlertDialogExample(
+                onDismissRequest = { showDialogState = StatusDialog.NONE to null },
+                onConfirmation = {
+                    showDialogState = StatusDialog.NONE to null
+                    println("Confirmation registered") // Add logic here to handle confirmation.
+                },
+                dialogTitle = "Duyệt",
+                dialogText = "Bạn đã thấy ứng viên ${selectedApplication?.jobSeeker?.fullName} đạt điều kiện",
+                icon = Icons.Default.Info
+            )
+        }
+
+        StatusDialog.REJECT -> {
+            AlertDialogExample(
+                onDismissRequest = { showDialogState = StatusDialog.NONE to null },
+                onConfirmation = {
+                    showDialogState = StatusDialog.NONE to null
+                    println("Confirmation Rejected") // Add logic here to handle confirmation.
+                },
+                dialogTitle = "Từ chối",
+                dialogText = "Bạn có chắn chắn muốn từ chối ứng viên ${selectedApplication?.jobSeeker?.fullName} ",
+                icon = Icons.Default.Warning
+            )
+        }
+
+        else -> {}
+    }
 
 
     Scaffold(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.popBackIfCan() }) {
                         Icon(Icons.Rounded.ArrowBackIosNew, contentDescription = "Back")
                     }
                 },
@@ -89,60 +140,36 @@ fun CandidateListPage(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 // Danh sách ứng viên
-            items(candidates) { candidate ->
-                CandidateItem(
-                    candidate = candidate,
-                    onAccept = {
-                        showDialog = StatusDialog.ACCEPT
-                    },
-                    onReject = {
-                        showDialog = StatusDialog.REJECT
-                    },
-                    onClickable = {
-                        navController.safeNavigate(
-                            AppRoutes.CANDIDATE_DETAIL,
-                            popUpToRoute = AppRoutes.CANDIDATE_LIST
-                        )
-                    }
-                )
-                when (showDialog) {
-                    StatusDialog.ACCEPT -> {
-                        AlertDialogExample(
-                            onDismissRequest = { showDialog = StatusDialog.NONE },
-                            onConfirmation = {
-                                showDialog = StatusDialog.NONE
-                                println("Confirmation registered") // Add logic here to handle confirmation.
-                            },
-                            dialogTitle = "Duyệt",
-                            dialogText = "Bạn đã thấy ứng viên ${candidate.name} đạt điều kiện",
-                            icon = Icons.Default.Info
-                        )
-                    }
-
-                    StatusDialog.REJECT -> {
-                        AlertDialogExample(
-                            onDismissRequest = { showDialog = StatusDialog.NONE },
-                            onConfirmation = {
-                                showDialog = StatusDialog.NONE
-                                println("Confirmation registered") // Add logic here to handle confirmation.
-                            },
-                            dialogTitle = "Từ chối",
-                            dialogText = "Bạn có chắn chắn muốn từ chối ứng viên ${candidate.name} ",
-                            icon = Icons.Default.Warning
-                        )
-                    }
-
-                    else -> {}
+            if (state.applicationList.isEmpty()){
+                item{ Text("Chưa có ai ứng tuyển") }
+            }else {
+                items(state.applicationList) { application ->
+                    ApplicationItem(
+                        application = application,
+                        onAccept = {
+                            showDialogState = StatusDialog.ACCEPT to application
+                        },
+                        onReject = {
+                            showDialogState = StatusDialog.REJECT to application
+                        },
+                        onClickable = {
+                            navController.safeNavigate(
+                                AppRoutes.CANDIDATE_DETAIL,
+                                popUpToRoute = AppRoutes.CANDIDATE_LIST
+                            )
+                        }
+                    )
                 }
             }
+
         }
     }
 }
 
 
 @Composable
-fun CandidateItem(
-    candidate: Candidate,
+fun ApplicationItem(
+    application: ApplicationResponse,
     onAccept: () -> Unit = {},
     onReject: () -> Unit = {},
     onClickable: () -> Unit
@@ -167,7 +194,7 @@ fun CandidateItem(
             ) {
                 // 1) Ảnh đại diện
                 Image(
-                    painter = painterResource(id = candidate.avatarRes),
+                    painter = painterResource(id = R.drawable.avt_candidate),
                     contentDescription = "Avatar",
                     modifier = Modifier
                         .size(56.dp)
@@ -184,25 +211,25 @@ fun CandidateItem(
                     // Tên và tick xanh và button xem chi tiết
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = candidate.name,
+                            text = application.jobSeeker.fullName,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
                             color = Color.Black
                         )
-                        if (candidate.isVerified) {
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = "Verified",
-                                tint = Color(0xFF7B61FF),
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
+//                        if (candidate.isVerified) {
+//                            Spacer(modifier = Modifier.width(6.dp))
+//                            Icon(
+//                                imageVector = Icons.Default.CheckCircle,
+//                                contentDescription = "Verified",
+//                                tint = Color(0xFF7B61FF),
+//                                modifier = Modifier.size(16.dp)
+//                            )
+//                        }
                     }
 
                     // Ngày sinh
                     Text(
-                        text = candidate.birthDate,
+                        text = application.jobSeeker.birthDate ?: "Not see",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 2.dp)
@@ -216,12 +243,12 @@ fun CandidateItem(
                             tint = Color.Gray,
                             modifier = Modifier.size(14.dp)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = candidate.location,
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
+//                        Spacer(modifier = Modifier.width(4.dp))
+//                        Text(
+//                            text = candidate.location,
+//                            fontSize = 12.sp,
+//                            color = Color.Gray
+//                        )
                     }
                 }
             }

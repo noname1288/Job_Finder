@@ -8,7 +8,7 @@ data class JobTemp2(
     val location: String="",
     val numberOfPositions: Int = 0,
     val postDate: String="",
-    val recruiter: String="",
+    val recruiter: String?=null,
     val requirement: String="",
     val salary: String="",
     val shift: String="",

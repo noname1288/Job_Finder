@@ -57,7 +57,7 @@ fun JobTemp2.toJob(): Job {
         updateAt = Utils.stringToLocalDateTime(this.updatedDate), //can be null
         endAt = Utils.stringToLocalDateTime(this.deadLine),
         shift = Utils.parseShift(this.shift),
-        recruiter = this.recruiter,
+        recruiter = if(this.recruiter == null) "" else  this.recruiter,
         status = this.status
     )
 }

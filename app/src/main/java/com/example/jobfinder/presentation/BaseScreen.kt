@@ -113,6 +113,7 @@ fun BaseScreen() {
         //
         AppRoutes.MESSAGE,
         "chat_detail/",
+        "candidate_list/",
 
         //update profile pagfe
         AppRoutes.UPDATE_PROFILE

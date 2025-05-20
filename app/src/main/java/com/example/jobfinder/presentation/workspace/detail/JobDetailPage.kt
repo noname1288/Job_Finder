@@ -59,7 +59,10 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jobfinder.domain.entity.Job
+import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.navigation.navigateWithArgs
 import com.example.jobfinder.navigation.popBackIfCan
+import com.example.jobfinder.navigation.safeNavigate
 import com.example.jobfinder.presentation.workspace.create.CreateJobEvent
 import com.example.jobfinder.presentation.workspace.detail.JobDetailEvent
 import com.example.jobfinder.presentation.workspace.detail.JobDetailViewModel
@@ -156,7 +159,15 @@ fun JobDetailPage(
                             text = { Text("Xem ứng viên") },
                             onClick = {
                                 expanded = false
-                                showBottomSheet = BottomSheetType.VIEW_CANDIDATES
+
+                                navController.navigateWithArgs(
+                                    route = AppRoutes.CANDIDATE_LIST,
+                                    args = arrayOf(jobId),
+                                    popUpToRoute = String.format(AppRoutes.JOB_DETAIL, jobId), // quan trọng nè!
+                                    isInclusive = false,
+                                    restore = false
+                                )
+//                                showBottomSheet = BottomSheetType.VIEW_CANDIDATES
 //                                onViewCandidates()
                             }
                         )
@@ -257,7 +268,9 @@ fun JobDetailPage(
                     }
                 }
 
-                BottomSheetType.VIEW_CANDIDATES -> {}
+                BottomSheetType.VIEW_CANDIDATES -> {
+
+                }
 
                 BottomSheetType.DELETE -> {
                     ModalBottomSheet(
