@@ -28,6 +28,7 @@ import com.example.jobfinder.presentation.message.ChatDetailPage
 import com.example.jobfinder.presentation.message.ChatViewModel
 import com.example.jobfinder.presentation.message.MessagePage
 import com.example.jobfinder.presentation.notification.NotificationPage
+import com.example.jobfinder.presentation.notification.NotificationViewModel
 import com.example.jobfinder.presentation.profile.ProfilePage
 import com.example.jobfinder.presentation.profile.update.UpdateProfilePage
 import com.example.jobfinder.presentation.register.RegisterPage
@@ -209,7 +210,16 @@ fun AppNavHost(
         * CÁC MÀN LẤY THÔNG BÁO CỦA HỆ THỐNG
          * */
         composable(AppRoutes.NOTIFICATION) {
-            NotificationPage()
+            val notiFactory = BaseViewModelFactory{
+                NotificationViewModel(
+                    AppContainer.notificationRepository
+                )
+            }
+
+            val notiViewModel : NotificationViewModel = viewModel(factory = notiFactory)
+
+
+            NotificationPage(navController, notiViewModel)
         }
 
         /*

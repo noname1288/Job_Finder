@@ -3,9 +3,11 @@ package com.example.jobfinder.service_locator
 import com.example.jobfinder.data.remote.RetrofitHelper
 import com.example.jobfinder.data.remote.repository.CandidateRepositoryImpl
 import com.example.jobfinder.data.remote.repository.JobRepositoryImpl
+import com.example.jobfinder.data.remote.repository.NotificationRepositoryImpl
 import com.example.jobfinder.data.remote.repository.UserRepositoryImpl
 import com.example.jobfinder.domain.repository.CandidateRepository
 import com.example.jobfinder.domain.repository.JobRepository
+import com.example.jobfinder.domain.repository.NotificationRepository
 import com.example.jobfinder.domain.repository.UserRepository
 import com.example.jobfinder.domain.usecase.CreateJobUseCase
 import com.example.jobfinder.domain.usecase.DeleteJobByIdUseCase
@@ -27,6 +29,7 @@ object AppContainer {
     private val userApi = RetrofitHelper.userAPI          // Retrofit service
     private val postApi = RetrofitHelper.postAPI
     private val candidateApi = RetrofitHelper.candidateAPI
+    private val notificationApi = RetrofitHelper.notificationAPI
 
     private val userRepository: UserRepository by lazy {
         UserRepositoryImpl(userApi)
@@ -38,6 +41,10 @@ object AppContainer {
 
     val candidateRepository: CandidateRepository by lazy {
         CandidateRepositoryImpl(candidateApi)
+    }
+
+    val notificationRepository: NotificationRepository by lazy {
+        NotificationRepositoryImpl(notificationApi)
     }
 
 

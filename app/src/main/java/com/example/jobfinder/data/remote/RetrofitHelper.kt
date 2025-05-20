@@ -2,6 +2,7 @@ package com.example.jobfinder.data.remote
 
 import com.example.jobfinder.data.remote.api.CandidateAPI
 import com.example.jobfinder.data.remote.api.JobAPI
+import com.example.jobfinder.data.remote.api.NotificationAPI
 import com.example.jobfinder.data.remote.api.UserAPI
 import com.example.jobfinder.data.remote.dto.response.JobSeekerDTO2
 import com.google.gson.GsonBuilder
@@ -31,5 +32,9 @@ object RetrofitHelper {
 
     //candidate management api: application, approve/reject - candidate
     val candidateAPI : CandidateAPI by lazy { retrofit.create(CandidateAPI::class.java) }
+
+    //notification api:
+    val notificationAPI : NotificationAPI by lazy { retrofit.create(NotificationAPI::class.java) }
+
 
 }
