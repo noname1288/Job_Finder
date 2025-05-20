@@ -35,10 +35,23 @@ class JobDetailViewModel(
                 deleteJobById()
             }
 
+            is JobDetailEvent.JobStatusChanged ->{
+                updateJobStatus(event.status)
+            }
+
+
+
             JobDetailEvent.ResetState -> {
                 resetState()
             }
         }
+    }
+
+    private fun updateJobStatus(status: String) {
+        viewModelScope.launch {
+
+        }
+
     }
 
     private fun deleteJobById() {
@@ -112,6 +125,7 @@ data class JobDetailState(
     var jobId: String = "1",
     val detailJob: Job = Job(),
     val isDeleted: Boolean = false, // thêm biến này
+    val isUpdateStatus: Boolean = false,
     override val errorMessage: String? = null,
     override val isLoading: Boolean = false,
     override val isSuccess: Boolean = false
@@ -119,6 +133,7 @@ data class JobDetailState(
 
 sealed class JobDetailEvent {
     data class JobIdChanged(val jobId: String) : JobDetailEvent()
+    data class JobStatusChanged(val status: String) : JobDetailEvent()
     object GetJobDetailById : JobDetailEvent()
 
     //    object UpdateJobStatus : JobDetailEvent()

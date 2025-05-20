@@ -54,8 +54,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jobfinder.R
 import com.example.jobfinder.data.remote.dto.response.ApplicationResponse
-import com.example.jobfinder.domain.entity.Candidate
-import com.example.jobfinder.domain.entity.sampleCandidates
 import com.example.jobfinder.navigation.AppRoutes
 import com.example.jobfinder.navigation.popBackIfCan
 import com.example.jobfinder.navigation.safeNavigate
@@ -64,6 +62,12 @@ enum class StatusDialog {
     NONE,
     ACCEPT,
     REJECT
+}
+
+object StatusApplication{
+    const val ACCEPTED = "ACCEPTED"
+    const val REJECTED = "REJECTED"
+    const val PENDING = "PENDING"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +87,20 @@ fun CandidateListPage(
         candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
     }
 
-    var candidates = sampleCandidates
+    //cập nhật UI khi danh sách thay đổi
+    LaunchedEffect(state.applicationList.size) {
+        candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
+    }
+
+    //cập nhật UI sau khi cập nhật trạng thái application
+    LaunchedEffect(state.isUpdated) {
+        if (state.isUpdated){
+            candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
+            candidateListViewModel.onEvent(CandidateListEvent.ResetState)
+        }
+
+    }
+
     var showDialogState by remember { mutableStateOf<Pair<StatusDialog, ApplicationResponse?>>(StatusDialog.NONE to null) }
 
     // Extract dialog rendering logic outside of LazyColumn
@@ -96,7 +113,7 @@ fun CandidateListPage(
                 onDismissRequest = { showDialogState = StatusDialog.NONE to null },
                 onConfirmation = {
                     showDialogState = StatusDialog.NONE to null
-                    println("Confirmation registered") // Add logic here to handle confirmation.
+                    candidateListViewModel.onEvent(CandidateListEvent.UpdateApplicationStatus(selectedApplication!!.idApplication, StatusApplication.ACCEPTED))
                 },
                 dialogTitle = "Duyệt",
                 dialogText = "Bạn đã thấy ứng viên ${selectedApplication?.jobSeeker?.fullName} đạt điều kiện",
@@ -110,6 +127,8 @@ fun CandidateListPage(
                 onConfirmation = {
                     showDialogState = StatusDialog.NONE to null
                     println("Confirmation Rejected") // Add logic here to handle confirmation.
+                    candidateListViewModel.onEvent(CandidateListEvent.UpdateApplicationStatus(selectedApplication!!.idApplication, StatusApplication.REJECTED))
+
                 },
                 dialogTitle = "Từ chối",
                 dialogText = "Bạn có chắn chắn muốn từ chối ứng viên ${selectedApplication?.jobSeeker?.fullName} ",
@@ -125,7 +144,12 @@ fun CandidateListPage(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackIfCan() }) {
+                    IconButton(onClick = {
+                        navController.popBackIfCan().let {
+                            candidateListViewModel.resetState()
+                        }
+                    }
+                    ) {
                         Icon(Icons.Rounded.ArrowBackIosNew, contentDescription = "Back")
                     }
                 },
@@ -172,7 +196,7 @@ fun ApplicationItem(
     application: ApplicationResponse,
     onAccept: () -> Unit = {},
     onReject: () -> Unit = {},
-    onClickable: () -> Unit
+    onClickable: () -> Unit // navigate to candidate's profile
 ) {
 
     Card(
@@ -229,7 +253,7 @@ fun ApplicationItem(
 
                     // Ngày sinh
                     Text(
-                        text = application.jobSeeker.birthDate ?: "Not see",
+                        text = application.jobSeeker.birthDate ?: "Not found birth day",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 2.dp)
@@ -254,6 +278,7 @@ fun ApplicationItem(
             }
 
             // Hàng 2: show button : "Chấp nhận"/ "Từ chối"
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -261,34 +286,39 @@ fun ApplicationItem(
 
                 horizontalArrangement = Arrangement.Center,
             ) { // Nút chấp nhận
-                Button(
-                    onClick = onAccept,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF7B61FF)
-                    ),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(0.3f)
-                ) {
-                    Text(text = "Chấp nhận", fontSize = 12.sp, color = Color.White)
+                when(application.status){
+                    StatusApplication.PENDING ->{Button(
+                        onClick = onAccept,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF7B61FF)
+                        ),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.weight(0.3f)
+                    ) {
+                        Text(text = "Chấp nhận", fontSize = 12.sp, color = Color.White)
+                    }
+
+                        Spacer(Modifier.width(16.dp))
+
+
+                        // Nút từ chối
+                        Button(
+                            onClick = onReject,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White
+                            ),
+                            border = BorderStroke(1.dp, Color.Red),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.weight(0.3f)
+                        ) {
+                            Text(text = "Từ chối", fontSize = 12.sp, color = Color.Red)
+                        }}
+                    StatusApplication.ACCEPTED ->{Text("Đã duyệt")}
+                    StatusApplication.REJECTED ->{Text("Đã từ chối")}
                 }
 
-                Spacer(Modifier.width(16.dp))
-
-
-                // Nút từ chối
-                Button(
-                    onClick = onReject,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White
-                    ),
-                    border = BorderStroke(1.dp, Color.Red),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(0.3f)
-                ) {
-                    Text(text = "Từ chối", fontSize = 12.sp, color = Color.Red)
-                }
             }
         }
     }

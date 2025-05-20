@@ -12,8 +12,10 @@ import com.example.jobfinder.domain.usecase.DeleteJobByIdUseCase
 import com.example.jobfinder.domain.usecase.GetAllJobsByRecruiterIdUseCase
 import com.example.jobfinder.domain.usecase.GetCandidatesByJobIdUseCase
 import com.example.jobfinder.domain.usecase.GetDetailJobByIdUseCase
+import com.example.jobfinder.domain.usecase.GetSeekerProfileUseCase
 import com.example.jobfinder.domain.usecase.LoginUseCase
 import com.example.jobfinder.domain.usecase.RegisterUseCase
+import com.example.jobfinder.domain.usecase.UpdateApplicationStatusUseCase
 
 
 /**
@@ -61,5 +63,11 @@ object AppContainer {
     }
     val getCandidatesByJobIdUseCase by lazy {
         GetCandidatesByJobIdUseCase(candidateRepository)
+    }
+    val updateApplicationStatusUseCase by lazy {
+        UpdateApplicationStatusUseCase(candidateRepository)
+    }
+    val getSeekerProfileUseCase by lazy {
+        GetSeekerProfileUseCase(userRepository)
     }
 }

@@ -12,4 +12,7 @@ interface CandidateRepository {
 
     //lấy info cho page: CandidateManagement
     suspend fun getInfoForCandidateManagementPage(recruiterId: Int, date: String) : NetworkResult<BaseResponse<CandidateManagementPageDTO>>
+
+    //đồng ý / từ chối đơn ứng tuyển
+    suspend fun updateApplicationStatus(applicationId: Int, status: String) : NetworkResult<BaseResponse<Unit>>
 }

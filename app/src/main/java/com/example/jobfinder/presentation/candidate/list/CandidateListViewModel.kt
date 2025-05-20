@@ -4,16 +4,17 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jobfinder.core.NetworkResult
-import com.example.jobfinder.data.local.UserSessionManager
 import com.example.jobfinder.data.remote.dto.response.ApplicationResponse
 import com.example.jobfinder.domain.usecase.GetCandidatesByJobIdUseCase
+import com.example.jobfinder.domain.usecase.UpdateApplicationStatusUseCase
 import com.example.jobfinder.presentation.BaseUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CandidateListViewModel(
-    private val getCandidatesByJobIdUseCase: GetCandidatesByJobIdUseCase
+    private val getCandidatesByJobIdUseCase: GetCandidatesByJobIdUseCase,
+    private val updateApplicationStatusUseCase: UpdateApplicationStatusUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(CandidateListState())
     val state: StateFlow<CandidateListState> = _state
@@ -29,16 +30,47 @@ class CandidateListViewModel(
                 fetchCandidates()
             }
             CandidateListEvent.ResetState -> {resetState()}
+            is CandidateListEvent.UpdateApplicationStatus ->{
+                updateApplicationStatus(event.appId, event.statusApp)
+            }
+
+//            is CandidateListEvent.AppIdChanged ->{
+//                _state.value = _state.value.copy(applicationSelected = event.appId)
+//            }
+//            is CandidateListEvent.AppStatusChanged ->{
+//                _state.value = _state.value.copy(statusApplication = event.statusApp)
+//            }
+        }
+    }
+
+    private fun updateApplicationStatus( appId: Int,  statusApp: String) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+
+            val response = updateApplicationStatusUseCase(
+                appId,
+                statusApp
+            )
+
+            when (response){
+                is NetworkResult.Error -> {
+                    _state.value = _state.value.copy(isLoading = false, errorMessage = response.message)
+                    Log.d("CandidateListViewModel", "updateApplicationStatus: ${response.message}")
+                }
+                is NetworkResult.Success->{
+                    Log.d("CandidateListViewModel", "updateApplicationStatus: ${response.data.message}")
+                    _state.value = _state.value.copy(isLoading = false, isUpdated = true)
+                }
+            }
 
         }
     }
 
-    private fun resetState() {
+    fun resetState() {
         _state.value = _state.value.copy(
-            isRefreshing = false,
-            isRejected = false,
-            isApproved = false,
+            isUpdated = false,
             isLoading = false,
+            isSuccess = false,
             errorMessage = null
         )
     }
@@ -71,9 +103,7 @@ class CandidateListViewModel(
 
 data class CandidateListState(
     val jobId:String ="",
-    val isRefreshing: Boolean = false,
-    val isRejected: Boolean = false,
-    val isApproved: Boolean = false,
+    val isUpdated: Boolean = false,
 
     val applicationList: List<ApplicationResponse> = emptyList(),
 
@@ -84,8 +114,12 @@ data class CandidateListState(
 
 sealed class CandidateListEvent {
     //    object Refresh : CandidateListEvent()
-//    object Approve : CandidateListEvent()
-//    object Reject : CandidateListEvent()
+//    data class AppIdChanged(val appId: String) : CandidateListEvent()
+//    data class AppStatusChanged(val statusApp: String) : CandidateListEvent()
+    data class UpdateApplicationStatus(
+        val appId: Int ,
+        val statusApp: String
+    ) : CandidateListEvent()
     data class JobIdChanged(val jobId: String) : CandidateListEvent()
     object GetCandidates : CandidateListEvent()
     object ResetState : CandidateListEvent()

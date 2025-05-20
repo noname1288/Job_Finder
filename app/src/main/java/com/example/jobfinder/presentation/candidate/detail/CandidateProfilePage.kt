@@ -33,6 +33,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,14 +44,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobfinder.domain.entity.Seeker
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CandidateProfilePage(
-    navController: NavController
+    navController: NavController,
+    viewModel: CandidateProfileViewModel
 ) {
+    val state by viewModel.state.collectAsState()
+
     val seeker = Seeker(
-        name = "Nguyễn Bằng Long",
+        name = state.seekerProfile.fullName,
         dateOfBirth = "12/01/2000",
         email = "banglong@sample.com",
         phoneNumber = "0123456789",

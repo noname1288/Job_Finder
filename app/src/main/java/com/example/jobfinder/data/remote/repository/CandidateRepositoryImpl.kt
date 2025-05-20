@@ -21,4 +21,11 @@ class CandidateRepositoryImpl (private val candidateApi: CandidateAPI) : Candida
     ): NetworkResult<BaseResponse<CandidateManagementPageDTO>> {
         return safeApiCall { candidateApi.getCandidateInPage(recruiterId, date) }
     }
+
+    override suspend fun updateApplicationStatus(
+        applicationId: Int,
+        status: String
+    ): NetworkResult<BaseResponse<Unit>> {
+        return safeApiCall { candidateApi.updateApplicationStatus(applicationId, status) }
+    }
 }

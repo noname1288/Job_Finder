@@ -72,7 +72,6 @@ import kotlinx.coroutines.launch
 enum class BottomSheetType {
     EDIT_CONTENT,
     UPDATE_STATUS,
-    VIEW_CANDIDATES,
     DELETE,
 }
 
@@ -138,22 +137,22 @@ fun JobDetailPage(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }) {
                         // Sửa nội dung
-                        DropdownMenuItem(
-                            text = { Text("Sửa nội dung") },
-                            onClick = {
-                                expanded = false
-                                showBottomSheet = BottomSheetType.EDIT_CONTENT
-                            }
-                        )
+//                        DropdownMenuItem(
+//                            text = { Text("Sửa nội dung") },
+//                            onClick = {
+//                                expanded = false
+//                                showBottomSheet = BottomSheetType.EDIT_CONTENT
+//                            }
+//                        )
                         // Trạng thái
-                        DropdownMenuItem(
-                            text = { Text("Trạng thái") },
-                            onClick = {
-                                expanded = false
-                                showBottomSheet = BottomSheetType.UPDATE_STATUS
-//                                onUpdateStatus()
-                            }
-                        )
+//                        DropdownMenuItem(
+//                            text = { Text("Trạng thái") },
+//                            onClick = {
+//                                expanded = false
+//                                showBottomSheet = BottomSheetType.UPDATE_STATUS
+////                                onUpdateStatus()
+//                            }
+//                        )
                         // Xem ứng viên
                         DropdownMenuItem(
                             text = { Text("Xem ứng viên") },
@@ -262,14 +261,20 @@ fun JobDetailPage(
                                     if (!sheetState.isVisible) {
                                         showBottomSheet = null
                                     }
+
+                                    Log.d("JobDetailPage", "selectedOption: $selectedOption")
+                                    when (selectedOption){
+                                        StatusJob.processing -> {
+
+                                        }
+                                        StatusJob.hiring -> {}
+                                        StatusJob.complete -> {}
+                                    }
+
                                 }
                             }
                         )
                     }
-                }
-
-                BottomSheetType.VIEW_CANDIDATES -> {
-
                 }
 
                 BottomSheetType.DELETE -> {

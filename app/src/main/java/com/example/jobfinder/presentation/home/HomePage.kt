@@ -47,15 +47,12 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import com.example.jobfinder.R
 import com.example.jobfinder.data.local.UserSessionManager
-import com.example.jobfinder.domain.entity.FakeData.mockPosts
-import com.example.jobfinder.domain.entity.PostModel
 import com.example.jobfinder.navigation.AppRoutes
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.entity.calculatePregress
+import com.example.jobfinder.navigation.navigateWithArgs
 import com.example.jobfinder.utils.Utils
 
 
@@ -309,7 +306,11 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = {
-//                navController.navigate(AppRoutes.JOB_DETAIL)
+                navController.navigateWithArgs(route = AppRoutes.JOB_DETAIL,
+                    args = arrayOf(post.id.toString()),
+                    popUpToRoute = AppRoutes.HOME,
+                    isInclusive = false,
+                    restore = false)
             }),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

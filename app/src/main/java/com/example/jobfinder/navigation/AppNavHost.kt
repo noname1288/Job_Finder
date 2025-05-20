@@ -16,6 +16,7 @@ import com.example.jobfinder.presentation.candidate.list.CandidateListPage
 import com.example.jobfinder.presentation.candidate.CandidateManagementPage
 import com.example.jobfinder.presentation.candidate.CandidateManagementViewModel
 import com.example.jobfinder.presentation.candidate.detail.CandidateProfilePage
+import com.example.jobfinder.presentation.candidate.detail.CandidateProfileViewModel
 import com.example.jobfinder.presentation.candidate.list.CandidateListViewModel
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage1
 import com.example.jobfinder.presentation.forgotpassword.ForgetPage2
@@ -154,7 +155,8 @@ fun AppNavHost(
         ) {backStackEntry ->
             val candidateListViewModelFactory = BaseViewModelFactory{
                 CandidateListViewModel(
-                    AppContainer.getCandidatesByJobIdUseCase
+                    AppContainer.getCandidatesByJobIdUseCase,
+                    AppContainer.updateApplicationStatusUseCase
                 )
             }
 
@@ -164,7 +166,14 @@ fun AppNavHost(
             CandidateListPage(navController,candidateListViewModel, jobId)
         }
         composable(AppRoutes.CANDIDATE_DETAIL) {
-            CandidateProfilePage(navController)
+            val candidateProfileViewModelFactory = BaseViewModelFactory{
+                CandidateProfileViewModel(
+                    AppContainer.getSeekerProfileUseCase
+                )
+            }
+
+            val viewModel: CandidateProfileViewModel = viewModel(factory = candidateProfileViewModelFactory)
+            CandidateProfilePage(navController, viewModel)
         }
 
 

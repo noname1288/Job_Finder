@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jobfinder.R
+import com.example.jobfinder.navigation.AppRoutes
+import com.example.jobfinder.navigation.navigateWithArgs
 import com.example.jobfinder.utils.Utils
 
 @Composable
@@ -67,6 +69,7 @@ fun CandidateManagementPage(navController: NavController, viewModel: CandidateMa
                     title = job.title,
                     numberOfRecruit = job.numberOfRecruit,
                     numberOfApplicants = job.numberOfApplicants,
+                    jobIdString = job.jobId.toString(),
                     navController = navController
                 )
 
@@ -92,6 +95,7 @@ fun CandidateItem(
     title: String,
     numberOfApplicants: Int,
     numberOfRecruit: Int,
+    jobIdString: String,
     navController: NavController
 ) {
     Card(
@@ -99,8 +103,13 @@ fun CandidateItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable {
-                //todo : go to CandidateListPage
-//                navController.navigate(AppRoutes.CANDIDATE_LIST)
+                navController.navigateWithArgs(
+                    route = AppRoutes.CANDIDATE_LIST,
+                    args = arrayOf(jobIdString),
+                    popUpToRoute = AppRoutes.CANDIDATE_MANAGEMENT,
+                    isInclusive = false,
+                    restore = false
+                )
             },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -168,7 +177,7 @@ fun CandidateItem(
 
 private fun calculateProgressColor(numberOfApplicants: Int, numberOfRecruit: Int): Color {
     val res = numberOfApplicants.toFloat() / numberOfRecruit.toFloat()
-    return if (res < 1.0) Color(0xFF2EBD85) else Color.Red
+    return if (res <= 1.0) Color(0xFF2EBD85) else Color.Red
 }
 
 

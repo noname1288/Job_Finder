@@ -3,7 +3,6 @@ package com.example.jobfinder.domain.usecase
 import com.example.jobfinder.core.NetworkResult
 import com.example.jobfinder.data.remote.dto.BaseResponse
 import com.example.jobfinder.data.remote.dto.request.RegisterUserRequest
-import com.example.jobfinder.domain.entity.Recruiter1
 import com.example.jobfinder.domain.repository.UserRepository
 
 class RegisterUseCase (private val userRepository: UserRepository){

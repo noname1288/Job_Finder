@@ -20,7 +20,7 @@ fun Job.toJobTemp(): JobTemp {
 
 fun JobTemp.toJob(): Job {
     return Job(
-        id = 0,
+        id = this.jobId,
         title = this.title,
         description = "",
         requirement = "",
