@@ -54,12 +54,21 @@ import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.entity.calculatePregress
 import com.example.jobfinder.navigation.navigateWithArgs
 import com.example.jobfinder.utils.Utils
+import com.example.jobfinder.utils.component.LoadingDialog
 
 
 @Composable
 fun HomePage(navController: NavController, homeViewModel: HomeViewModel) {
     // Dùng LazyColumn nếu nội dung dài, cần scroll
     val stateHome by homeViewModel.stateHome.collectAsState()
+
+    if (stateHome.isLoading){
+        LoadingDialog()
+    }
+
+    LaunchedEffect(Unit){
+        homeViewModel.fetchData()
+    }
 
 
     LazyColumn(

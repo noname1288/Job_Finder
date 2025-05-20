@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -77,13 +78,14 @@ fun LoginPage(modifier: Modifier,navController: NavController, authViewModel: Au
         modifier = modifier.fillMaxSize(), // Apply padding from Scaffold
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(60.dp))
+        Spacer(Modifier.height(30.dp))
 
         Text("JobSpot", fontSize = 36.sp, fontWeight = FontWeight.Bold)
         Text(
             text = "Chào mừng bạn với tư cách nhà tuyển dụng",
             fontSize = 14.sp,
-            fontStyle = FontStyle.Italic
+            fontStyle = FontStyle.Italic,
+            textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.height(60.dp))

@@ -65,7 +65,7 @@ fun RegisterPage(navController: NavController, authViewModel: AuthViewModel) {
         }
 
         state.errorMessage?.let { error ->
-            Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -74,7 +74,7 @@ fun RegisterPage(navController: NavController, authViewModel: AuthViewModel) {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(65.dp))
+        Spacer(Modifier.height(45.dp))
 
         Text("JobSpot", fontSize = 36.sp, fontWeight = FontWeight.Bold)
         Text(

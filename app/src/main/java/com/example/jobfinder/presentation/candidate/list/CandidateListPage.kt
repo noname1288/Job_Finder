@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -57,6 +58,7 @@ import com.example.jobfinder.data.remote.dto.response.ApplicationResponse
 import com.example.jobfinder.navigation.AppRoutes
 import com.example.jobfinder.navigation.popBackIfCan
 import com.example.jobfinder.navigation.safeNavigate
+import com.example.jobfinder.utils.component.LoadingDialog
 
 enum class StatusDialog {
     NONE,
@@ -64,7 +66,7 @@ enum class StatusDialog {
     REJECT
 }
 
-object StatusApplication{
+object StatusApplication {
     const val ACCEPTED = "ACCEPTED"
     const val REJECTED = "REJECTED"
     const val PENDING = "PENDING"
@@ -75,33 +77,38 @@ object StatusApplication{
 fun CandidateListPage(
     navController: NavController,
     candidateListViewModel: CandidateListViewModel,
-    jobId : String
+    jobId: String
 ) {
     val state by candidateListViewModel.state.collectAsState()
     Log.d("CandidateListPage", "JobId: $jobId")
 
+
+    // Gọi API lần đầu
     LaunchedEffect(jobId) {
-        //update ID
         candidateListViewModel.onEvent(CandidateListEvent.JobIdChanged(jobId))
-        // fetch data
         candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
     }
 
-    //cập nhật UI khi danh sách thay đổi
-    LaunchedEffect(state.applicationList.size) {
-        candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
-    }
-
-    //cập nhật UI sau khi cập nhật trạng thái application
+    // Cập nhật lại sau khi đổi trạng thái
     LaunchedEffect(state.isUpdated) {
-        if (state.isUpdated){
+        if (state.isUpdated) {
             candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
             candidateListViewModel.onEvent(CandidateListEvent.ResetState)
         }
-
     }
 
-    var showDialogState by remember { mutableStateOf<Pair<StatusDialog, ApplicationResponse?>>(StatusDialog.NONE to null) }
+    //cập nhật UI khi danh sách thay đổi
+    LaunchedEffect(state.applicationList) {
+        candidateListViewModel.onEvent(CandidateListEvent.GetCandidates)
+    }
+
+
+    var showDialogState by remember {
+        mutableStateOf<Pair<StatusDialog, ApplicationResponse?>>(
+            StatusDialog.NONE to null
+        )
+    }
+
 
     // Extract dialog rendering logic outside of LazyColumn
     val (dialogType, selectedApplication) = showDialogState
@@ -113,7 +120,12 @@ fun CandidateListPage(
                 onDismissRequest = { showDialogState = StatusDialog.NONE to null },
                 onConfirmation = {
                     showDialogState = StatusDialog.NONE to null
-                    candidateListViewModel.onEvent(CandidateListEvent.UpdateApplicationStatus(selectedApplication!!.idApplication, StatusApplication.ACCEPTED))
+                    candidateListViewModel.onEvent(
+                        CandidateListEvent.UpdateApplicationStatus(
+                            selectedApplication!!.idApplication,
+                            StatusApplication.ACCEPTED
+                        )
+                    )
                 },
                 dialogTitle = "Duyệt",
                 dialogText = "Bạn đã thấy ứng viên ${selectedApplication?.jobSeeker?.fullName} đạt điều kiện",
@@ -127,7 +139,12 @@ fun CandidateListPage(
                 onConfirmation = {
                     showDialogState = StatusDialog.NONE to null
                     println("Confirmation Rejected") // Add logic here to handle confirmation.
-                    candidateListViewModel.onEvent(CandidateListEvent.UpdateApplicationStatus(selectedApplication!!.idApplication, StatusApplication.REJECTED))
+                    candidateListViewModel.onEvent(
+                        CandidateListEvent.UpdateApplicationStatus(
+                            selectedApplication!!.idApplication,
+                            StatusApplication.REJECTED
+                        )
+                    )
 
                 },
                 dialogTitle = "Từ chối",
@@ -139,53 +156,60 @@ fun CandidateListPage(
         else -> {}
     }
 
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackIfCan().let {
-                            candidateListViewModel.resetState()
+    /** ---------- UI ROOT ---------- */
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navController.popBackIfCan().let {
+                                candidateListViewModel.resetState()
+                            }
                         }
-                    }
-                    ) {
-                        Icon(Icons.Rounded.ArrowBackIosNew, contentDescription = "Back")
-                    }
-                },
-                title = { Text("Danh sách ứng viên") }
-            )
-        }
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-// Danh sách ứng viên
-            if (state.applicationList.isEmpty()){
-                item{ Text("Chưa có ai ứng tuyển") }
-            }else {
-                items(state.applicationList) { application ->
-                    ApplicationItem(
-                        application = application,
-                        onAccept = {
-                            showDialogState = StatusDialog.ACCEPT to application
-                        },
-                        onReject = {
-                            showDialogState = StatusDialog.REJECT to application
-                        },
-                        onClickable = {
-                            navController.safeNavigate(
-                                AppRoutes.CANDIDATE_DETAIL,
-                                popUpToRoute = AppRoutes.CANDIDATE_LIST
-                            )
+                        ) {
+                            Icon(Icons.Rounded.ArrowBackIosNew, contentDescription = "Back")
                         }
-                    )
-                }
+                    },
+                    title = { Text("Danh sách ứng viên") }
+                )
             }
+        ) { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+// Danh sách ứng viên
+                if (state.applicationList.isEmpty()) {
+                    item { Text("Chưa có ai ứng tuyển") }
+                } else {
+                    items(state.applicationList) { application ->
+                        ApplicationItem(
+                            application = application,
+                            onAccept = {
+                                showDialogState = StatusDialog.ACCEPT to application
+                            },
+                            onReject = {
+                                showDialogState = StatusDialog.REJECT to application
+                            },
+                            onClickable = {
+                                navController.safeNavigate(
+                                    AppRoutes.CANDIDATE_DETAIL,
+                                    popUpToRoute = AppRoutes.CANDIDATE_LIST
+                                )
+                            }
+                        )
+                    }
+                }
 
+            }
+        }
+
+        /* ------- Loading Overlay ------- */
+        if (state.isLoading) {
+            LoadingDialog()          // Đặt SAU Scaffold => luôn đè lên
         }
     }
 }
@@ -286,18 +310,19 @@ fun ApplicationItem(
 
                 horizontalArrangement = Arrangement.Center,
             ) { // Nút chấp nhận
-                when(application.status){
-                    StatusApplication.PENDING ->{Button(
-                        onClick = onAccept,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF7B61FF)
-                        ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.weight(0.3f)
-                    ) {
-                        Text(text = "Chấp nhận", fontSize = 12.sp, color = Color.White)
-                    }
+                when (application.status) {
+                    StatusApplication.PENDING -> {
+                        Button(
+                            onClick = onAccept,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF7B61FF)
+                            ),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.weight(0.3f)
+                        ) {
+                            Text(text = "Chấp nhận", fontSize = 12.sp, color = Color.White)
+                        }
 
                         Spacer(Modifier.width(16.dp))
 
@@ -314,9 +339,16 @@ fun ApplicationItem(
                             modifier = Modifier.weight(0.3f)
                         ) {
                             Text(text = "Từ chối", fontSize = 12.sp, color = Color.Red)
-                        }}
-                    StatusApplication.ACCEPTED ->{Text("Đã duyệt")}
-                    StatusApplication.REJECTED ->{Text("Đã từ chối")}
+                        }
+                    }
+
+                    StatusApplication.ACCEPTED -> {
+                        Text("Đã duyệt")
+                    }
+
+                    StatusApplication.REJECTED -> {
+                        Text("Đã từ chối")
+                    }
                 }
 
             }

@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jobfinder.data.local.UserSessionManager
 import com.example.jobfinder.utils.Utils
+import com.example.jobfinder.utils.component.LoadingDialog
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -95,6 +96,10 @@ fun CreateJobPage(navController: NavController, createJobViewModel: CreateJobVie
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
+
+    if (stateCreateJob.isLoading){
+        LoadingDialog()
+    }
 
     LaunchedEffect(key1 = stateCreateJob.isSuccess, key2 = stateCreateJob.errorMessage) {
         if (stateCreateJob.isSuccess) {

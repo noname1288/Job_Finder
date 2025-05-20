@@ -19,11 +19,8 @@ class HomeViewModel : ViewModel(){
     private val _stateHome = MutableStateFlow(HomeState())
     val stateHome: StateFlow<HomeState> = _stateHome
 
-    init {
-        fetchData()
-    }
 
-    private fun fetchData() {
+    fun fetchData() {
         viewModelScope.launch {
             _stateHome.value = _stateHome.value.copy(isLoading = true)
 

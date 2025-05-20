@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
-    private const val BASE_URL = "http://192.168.0.15:8080"
+    private const val BASE_URL = "https://server-mad.onrender.com"
 
     val gson = GsonBuilder()
         .registerTypeAdapter(JobSeekerDTO2::class.java, JobSeekerDTO2Deserializer())

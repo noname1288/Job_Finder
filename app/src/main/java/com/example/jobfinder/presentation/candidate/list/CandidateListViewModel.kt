@@ -60,6 +60,9 @@ class CandidateListViewModel(
                 is NetworkResult.Success->{
                     Log.d("CandidateListViewModel", "updateApplicationStatus: ${response.data.message}")
                     _state.value = _state.value.copy(isLoading = false, isUpdated = true)
+
+                    // Sau khi cập nhật trạng thái, lấy lại danh sách ứng viên
+                    fetchCandidates() // Gọi lại hàm fetchCandidates để lấy danh sách mới
                 }
             }
 

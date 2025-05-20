@@ -11,6 +11,7 @@ import com.example.jobfinder.data.remote.dto.request.RegisterUserRequest
 import com.example.jobfinder.data.remote.dto.response.LoginUserResponse
 import com.example.jobfinder.domain.usecase.LoginUseCase
 import com.example.jobfinder.domain.usecase.RegisterUseCase
+import com.example.jobfinder.navigation.NavigationDestination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -72,7 +73,22 @@ class AuthViewModel(
             is RegisterEvent.Register -> {
                 registerUser()
             }
+
+            is RegisterEvent.ResetState -> {
+                resetRegisterState()
+            }
         }
+    }
+
+    private fun resetRegisterState() {
+        _stateRegister.value = _stateRegister.value.copy(
+            isLoading = false,
+            isSuccess = false,
+            errorMessage = null,
+            fullName = "",
+            email = "",
+            password = ""
+        )
     }
 
     private fun login() {
@@ -118,8 +134,17 @@ class AuthViewModel(
 
             //update state based on the result
             when(result){
-                else -> {
-                    _stateRegister.update { it.copy(isLoading = false, isSuccess = true) }
+                is NetworkResult.Error -> {
+                    _stateRegister.value = _stateRegister.value.copy(
+                        isLoading = false,
+                        errorMessage = result.message
+                    )
+                }
+                is NetworkResult.Success->{
+                    _stateRegister.value = _stateRegister.value.copy(
+                        isLoading = false,
+                        isSuccess = true
+                    )
                 }
             }
         }
@@ -141,7 +166,7 @@ class AuthViewModel(
         _stateLogin.update { it.copy(username = "", password = "") }
     }
     fun onNavigatedToRegister() {
-        _stateRegister.update { it.copy(isSuccess = false) }
+        resetRegisterState()
     }
 }
 
@@ -179,5 +204,6 @@ sealed class RegisterEvent {
     data class FullNameChanged(val fullName: String) : RegisterEvent()
     data class EmailChanged(val email: String) : RegisterEvent()
     data class PasswordChanged(val password: String) : RegisterEvent()
+    object ResetState : RegisterEvent()
     object Register : RegisterEvent()
 }

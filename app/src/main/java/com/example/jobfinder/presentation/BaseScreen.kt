@@ -136,7 +136,7 @@ fun BaseScreen() {
         MyNavBarItem("home", Icons.Outlined.Home, 0, AppRoutes.HOME),
         MyNavBarItem("work_space", Icons.Outlined.CalendarToday, 0, AppRoutes.WORK_SPACE),
         MyNavBarItem("candidate", Icons.Outlined.Group, 0, AppRoutes.CANDIDATE_MANAGEMENT),
-        MyNavBarItem("notification", Icons.Outlined.Notifications, 5, AppRoutes.NOTIFICATION),
+//        MyNavBarItem("notification", Icons.Outlined.Notifications, 5, AppRoutes.NOTIFICATION),
         MyNavBarItem("profile", Icons.Outlined.Person, 0, AppRoutes.PROFILE),
     )
 
