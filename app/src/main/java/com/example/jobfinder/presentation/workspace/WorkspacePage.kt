@@ -44,6 +44,16 @@ import com.example.jobfinder.navigation.navigateWithArgs
 import com.example.jobfinder.utils.Utils
 
 
+/**
+ * Composable function for the Workspace page.
+ *
+ * This page displays a list of jobs retrieved from the WorkspaceViewModel.
+ * It features a background with a title and subtitle, and a lazy column to efficiently display the job cards.
+ * If no jobs are found, a "Not found any jobs" message is shown.
+ *
+ * @param navController The NavController used for navigation actions, such as navigating to job details.
+ * @param workspaceViewModel The ViewModel responsible for managing workspace-related data, including fetching and holding the list of jobs.
+ */
 @Composable
 fun WorkspacePage(navController: NavController, workspaceViewModel: WorkspaceViewModel) {
     val context = LocalContext.current

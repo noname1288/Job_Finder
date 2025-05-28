@@ -50,6 +50,7 @@ import com.example.jobfinder.data.local.UserSessionManager
 import com.example.jobfinder.navigation.AppRoutes
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.jobfinder.domain.entity.Job
 import com.example.jobfinder.domain.entity.calculatePregress
 import com.example.jobfinder.navigation.navigateWithArgs
@@ -57,6 +58,21 @@ import com.example.jobfinder.utils.Utils
 import com.example.jobfinder.utils.component.LoadingDialog
 
 
+/**
+ * Composable function for the Home Page of the application.
+ *
+ * This function displays the main content of the home screen, including:
+ * - A header with user information and navigation options.
+ * - A greeting card.
+ * - An overview section summarizing job statuses (open, working, closed).
+ * - A list of job postings.
+ *
+ * It observes the state from the `homeViewModel` to update the UI dynamically.
+ * A loading dialog is shown while data is being fetched.
+ *
+ * @param navController The NavController used for navigation between screens.
+ * @param homeViewModel The ViewModel responsible for providing data and business logic for the home screen.
+ */
 @Composable
 fun HomePage(navController: NavController, homeViewModel: HomeViewModel) {
     // Dùng LazyColumn nếu nội dung dài, cần scroll
@@ -315,11 +331,13 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = {
-                navController.navigateWithArgs(route = AppRoutes.JOB_DETAIL,
+                navController.navigateWithArgs(
+                    route = AppRoutes.JOB_DETAIL,
                     args = arrayOf(post.id.toString()),
                     popUpToRoute = AppRoutes.HOME,
                     isInclusive = false,
-                    restore = false)
+                    restore = false
+                )
             }),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -431,4 +449,10 @@ fun LinerProgressPostItem(post: Job, navController: NavController) {
     }
     Spacer(Modifier.height(8.dp))
     HorizontalDivider(thickness = 0.dp, color = Color.Transparent) // chỉ để tạo khoảng trống
+}
+
+@Preview
+@Composable
+fun HomePagePreview(modifier: Modifier = Modifier) {
+    GreetingCard()
 }
