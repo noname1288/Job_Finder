@@ -54,9 +54,3 @@
 - Giao diện Compose kết hợp State Management hiện đại
 
 ```
-
----
-
-✅ Nếu bạn cần mình **chuyển sang tiếng Anh**, **thêm ảnh demo**, hoặc **tạo badge đẹp như GitHub Stars / Android Version**, chỉ cần nói nhé.  
-Bạn có muốn mình **xuất file README.md sẵn** để copy vào dự án không?
-```
